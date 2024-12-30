@@ -1,0 +1,30 @@
+.home-container {
+    position: relative;
+    text-align: center;
+    color: white;
+    background-image: url('../../../assets/annie-spratt-biVuafyC8oI-unsplash.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 100vh; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .overlay {
+    text-align: center;
+  }
+  
+  h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+  }
+  
+  p {
+    font-size: 1.2em;
+    margin-bottom: 30px;
+  }
+  
+  .button-group a {
+    margin: 0 10px;
+  }
