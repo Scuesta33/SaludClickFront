@@ -10,10 +10,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { NavbarComponent } from './components/navbar/navbar.component'; 
 import { SignupComponent } from './pages/signup/signup.component'; // Corrected path
 import { HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http'; // Import HttpClientModule y withFetch
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { HomeComponent } from './pages/home/home.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
@@ -23,7 +26,8 @@ import { HttpClientModule, provideHttpClient, withFetch } from '@angular/common/
     NavbarComponent, // Import standalone component
     SignupComponent,
     MatInputModule,// Import standalone component
-    HttpClientModule // Import HttpClientModule
+    HttpClientModule, // Import HttpClientModule
+    MatSnackBarModule
   ],
   providers: [
     provideClientHydration(withEventReplay()),

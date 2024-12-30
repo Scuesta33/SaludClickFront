@@ -6,6 +6,8 @@ import { MatSelectModule } from '@angular/material/select'; // Import MatSelectM
 import { FormsModule, NgForm } from '@angular/forms';
 import { UserService } from '../../services/user.service';
 import { HttpClientModule } from '@angular/common/http'; // Import HttpClientModule
+import { MatSnackBar } from '@angular/material/snack-bar';
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-signup',
   standalone: true,
@@ -14,7 +16,7 @@ import { HttpClientModule } from '@angular/common/http'; // Import HttpClientMod
   styleUrls: ['./signup.component.css']
 })
 export class SignupComponent { 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService, private snack:MatSnackBar) {}
 
   onSubmit(signupForm: NgForm) {
     const formData = {
@@ -30,8 +32,22 @@ export class SignupComponent {
     this.userService.añadirUsuario(formData).subscribe(
       (data) => {
         console.log(data);
+        Swal.fire({
+          icon: 'success',
+          title: 'Usuario añadido con éxito',
+          showConfirmButton: true,
+          timer: 3000
+        });
+      },
+      (error) => {
+        console.error(error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al añadir usuario',
+          showConfirmButton: true,
+          timer: 3000
+        });
       }
-
     );
   }
 }
