@@ -2,7 +2,7 @@
     position: relative;
     text-align: center;
     color: white;
-    background-image: url('../../../assets/annie-spratt-biVuafyC8oI-unsplash.jpg');
+    background-image: url('../../../assets/piron-guillaume-U4FyCp3-KzY-unsplash.jpg');
     background-size: cover;
     background-position: center;
     height: 100vh; 
@@ -13,6 +13,8 @@
   
   .overlay {
     text-align: center;
+    max-width: 80%;
+    margin: 0 auto;
   }
   
   h1 {
