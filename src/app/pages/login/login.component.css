@@ -1,0 +1,19 @@
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px; /* Espacio entre los campos del formulario */
+  }
+  
+  .full-width {
+    width: 100%;
+  }
+
+  .signup-link {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  
+  .signup-link:hover {
+    color: darkblue;
+  }

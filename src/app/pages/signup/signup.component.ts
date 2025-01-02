@@ -1,22 +1,24 @@
 import { Component } from '@angular/core';
-import { MatFormFieldModule } from '@angular/material/form-field'; // Import MatFormFieldModule
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button'; // Import MatButtonModule
-import { MatSelectModule } from '@angular/material/select'; // Import MatSelectModule
+import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
 import { FormsModule, NgForm } from '@angular/forms';
 import { UserService } from '../../services/user.service';
-import { HttpClientModule } from '@angular/common/http'; // Import HttpClientModule
+import { HttpClientModule } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-signup',
   standalone: true,
-  imports: [MatFormFieldModule, MatInputModule, MatButtonModule, MatSelectModule, FormsModule, HttpClientModule], // Import MatFormFieldModule
+  imports: [MatFormFieldModule, MatInputModule, MatButtonModule, MatSelectModule, FormsModule, HttpClientModule],
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.css']
 })
-export class SignupComponent { 
-  constructor(private userService: UserService, private snack:MatSnackBar) {}
+export class SignupComponent {
+  constructor(private userService: UserService, private snack: MatSnackBar, private router: Router) {}
 
   onSubmit(signupForm: NgForm) {
     const formData = {
@@ -49,5 +51,9 @@ export class SignupComponent {
         });
       }
     );
+  }
+
+  navigateToLogin() {
+    this.router.navigate(['/login']);
   }
 }

@@ -1,17 +1,18 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { BrowserModule, provideClientHydration, withEventReplay } from '@angular/platform-browser';
-import {MatInputModule} from '@angular/material/input';
-
+import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
-import { NavbarComponent } from './components/navbar/navbar.component'; 
-import { SignupComponent } from './pages/signup/signup.component'; // Corrected path
-import { HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http'; // Import HttpClientModule y withFetch
-import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { NavbarComponent } from './components/navbar/navbar.component';
+import { HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { HomeComponent } from './pages/home/home.component';
+import { MatInputModule } from '@angular/material/input';
+import { SignupComponent } from './pages/signup/signup.component';
+import { LoginComponent } from './pages/login/login.component';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -22,18 +23,20 @@ import { HomeComponent } from './pages/home/home.component';
     BrowserModule,
     AppRoutingModule,
     MatButtonModule,
-    MatFormFieldModule, // Import MatFormFieldModule
-    NavbarComponent, // Import standalone component
-    SignupComponent,
-    MatInputModule,// Import standalone component
-    HttpClientModule, // Import HttpClientModule
-    MatSnackBarModule
+    MatFormFieldModule,
+    NavbarComponent,
+    SignupComponent, // Import standalone component
+    MatInputModule,
+    HttpClientModule,
+    MatSnackBarModule,
+    LoginComponent,
+    RouterModule // Import standalone component
   ],
   providers: [
-    provideClientHydration(withEventReplay()),
+    provideHttpClient(withFetch()),
     provideAnimationsAsync()
   ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA], // Add this line
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

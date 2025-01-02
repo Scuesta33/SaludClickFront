@@ -7,3 +7,12 @@
   .full-width {
     width: 100%;
   }
+  .login-link {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  
+  .login-link:hover {
+    color: darkblue;
+  }
