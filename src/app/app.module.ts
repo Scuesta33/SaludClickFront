@@ -12,12 +12,15 @@ import { HomeComponent } from './pages/home/home.component';
 import { MatInputModule } from '@angular/material/input';
 import { SignupComponent } from './pages/signup/signup.component';
 import { LoginComponent } from './pages/login/login.component';
-import { RouterModule } from '@angular/router';
+import { DashboardMedicoComponent } from './pages/dashboard-medico/dashboard-medico.component';
+import { DashboardPacienteComponent } from './pages/dashboard-paciente/dashboard-paciente.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent
+    HomeComponent,
+    DashboardMedicoComponent,
+    DashboardPacienteComponent
   ],
   imports: [
     BrowserModule,
@@ -25,12 +28,11 @@ import { RouterModule } from '@angular/router';
     MatButtonModule,
     MatFormFieldModule,
     NavbarComponent,
-    SignupComponent, // Import standalone component
     MatInputModule,
     HttpClientModule,
     MatSnackBarModule,
-    LoginComponent,
-    RouterModule // Import standalone component
+    SignupComponent,
+    LoginComponent
   ],
   providers: [
     provideHttpClient(withFetch()),
