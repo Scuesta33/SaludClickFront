@@ -19,8 +19,8 @@ import { DashboardPacienteComponent } from './pages/dashboard-paciente/dashboard
   declarations: [
     AppComponent,
     HomeComponent,
-    DashboardMedicoComponent,
-    DashboardPacienteComponent
+    DashboardMedicoComponent
+    
   ],
   imports: [
     BrowserModule,
@@ -32,7 +32,8 @@ import { DashboardPacienteComponent } from './pages/dashboard-paciente/dashboard
     HttpClientModule,
     MatSnackBarModule,
     SignupComponent,
-    LoginComponent
+    LoginComponent,
+    DashboardPacienteComponent
   ],
   providers: [
     provideHttpClient(withFetch()),
