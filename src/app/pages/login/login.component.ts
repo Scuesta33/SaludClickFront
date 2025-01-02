@@ -28,17 +28,19 @@ export class LoginComponent {
       (response: any) => {
         console.log(response);
         localStorage.setItem('token', response.token);
-        localStorage.setItem('userRole', response.userRole); // Almacena el rol del usuario
+        localStorage.setItem('userRole', response.rol); // Almacena el rol del usuario
         Swal.fire({
           icon: 'success',
           title: 'Inicio de sesión exitoso',
           showConfirmButton: true,
           timer: 3000
         }).then(() => {
-          if (response.userRole === 'MEDICO') {
+          if (response.rol === 'MEDICO') {
             this.router.navigate(['/dashboard-medico']);
-          } else if (response.userRole === 'PACIENTE') {
+          } else if (response.rol === 'PACIENTE') {
             this.router.navigate(['/dashboard-paciente']);
+          } else {
+            Swal.fire('Error', 'Rol de usuario no reconocido', 'error');
           }
         });
       },
