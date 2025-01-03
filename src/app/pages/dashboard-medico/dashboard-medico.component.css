@@ -1,0 +1,55 @@
+.sidenav-container {
+    height: 100vh;
+  }
+  
+  mat-sidenav {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  mat-toolbar {
+    background: #3f51b5;
+    color: white;
+  }
+  
+  .content {
+    padding: 20px;
+  }
+  
+  h2 {
+    margin-top: 0;
+  }
+  
+  .mat-nav-list {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  mat-list-item {
+    cursor: pointer;
+    margin-bottom: 15px; /* Añadir espacio entre los elementos del menú */
+  }
+  
+  mat-list-item:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .logout {
+    margin-top: auto;
+  }
+  
+  .menu-button {
+    display: none;
+  }
+  
+  @media (max-width: 768px) {
+    mat-sidenav {
+      width: 100%;
+    }
+  
+    .menu-button {
+      display: inline-block;
+    }
+  }

@@ -1,1 +1,54 @@
-<p>dashboard-medico works!</p>
+<mat-sidenav-container class="sidenav-container">
+    <mat-sidenav #sidenav [mode]="isScreenSmall ? 'over' : 'side'" [opened]="!isScreenSmall || sidenav.opened">
+      <mat-toolbar color="primary">Menú</mat-toolbar>
+      <mat-nav-list>
+        <mat-list-item (click)="setActiveSection('crear-disponibilidades'); closeSidenavIfSmall()">
+          <mat-icon matListIcon>event_available</mat-icon>
+          <span matLine>Crear disponibilidades</span>
+        </mat-list-item>
+        <mat-list-item (click)="setActiveSection('modificar-citas'); closeSidenavIfSmall()">
+          <mat-icon matListIcon>edit</mat-icon>
+          <span matLine>Modificar citas</span>
+        </mat-list-item>
+        <mat-list-item (click)="setActiveSection('visualizar-consultas'); closeSidenavIfSmall()">
+          <mat-icon matListIcon>visibility</mat-icon>
+          <span matLine>Visualizar consultas</span>
+        </mat-list-item>
+        <mat-list-item (click)="setActiveSection('datos-usuario'); closeSidenavIfSmall()">
+          <mat-icon matListIcon>person</mat-icon>
+          <span matLine>Datos del usuario</span>
+        </mat-list-item>
+        <mat-divider></mat-divider>
+        <mat-list-item (click)="logout(); closeSidenavIfSmall()" class="logout">
+          <mat-icon matListIcon>exit_to_app</mat-icon>
+          <span matLine>Cerrar sesión</span>
+        </mat-list-item>
+      </mat-nav-list>
+    </mat-sidenav>
+    <mat-sidenav-content>
+      <mat-toolbar color="primary">
+        <button mat-icon-button (click)="sidenav.toggle()" class="menu-button">
+          <mat-icon>menu</mat-icon>
+        </button>
+        Médico
+      </mat-toolbar>
+      <div class="content">
+        <div *ngIf="activeSection === 'crear-disponibilidades'">
+          <h2>Crear disponibilidades</h2>
+          <!-- Contenido para Crear disponibilidades -->
+        </div>
+        <div *ngIf="activeSection === 'modificar-citas'">
+          <h2>Modificar citas</h2>
+          <!-- Contenido para Modificar citas -->
+        </div>
+        <div *ngIf="activeSection === 'visualizar-consultas'">
+          <h2>Visualizar consultas</h2>
+          <!-- Contenido para Visualizar consultas -->
+        </div>
+        <div *ngIf="activeSection === 'datos-usuario'">
+          <h2>Datos del usuario</h2>
+          <!-- Contenido para Datos del usuario -->
+        </div>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>

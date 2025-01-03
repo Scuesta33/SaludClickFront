@@ -19,7 +19,7 @@ import { DashboardPacienteComponent } from './pages/dashboard-paciente/dashboard
   declarations: [
     AppComponent,
     HomeComponent,
-    DashboardMedicoComponent
+   
     
   ],
   imports: [
@@ -33,7 +33,9 @@ import { DashboardPacienteComponent } from './pages/dashboard-paciente/dashboard
     MatSnackBarModule,
     SignupComponent,
     LoginComponent,
-    DashboardPacienteComponent
+    DashboardPacienteComponent,
+    DashboardMedicoComponent
+
   ],
   providers: [
     provideHttpClient(withFetch()),

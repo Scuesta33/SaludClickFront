@@ -1,31 +1,41 @@
 <mat-sidenav-container class="sidenav-container">
-  <mat-sidenav mode="side" opened>
-    <mat-toolbar>Menú</mat-toolbar>
+  <mat-sidenav #sidenav [mode]="isScreenSmall ? 'over' : 'side'" [opened]="!isScreenSmall || sidenav.opened">
+    <mat-toolbar color="primary">Menú</mat-toolbar>
     <mat-nav-list>
-      <mat-list-item (click)="setActiveSection('horarios')">
-        <mat-icon>schedule</mat-icon>
-        <span>Horarios de médicos</span>
+      <mat-list-item (click)="setActiveSection('horarios'); closeSidenavIfSmall()">
+        <mat-icon matListIcon>schedule</mat-icon>
+        <span matLine>Horarios de médicos</span>
       </mat-list-item>
-      <mat-list-item (click)="setActiveSection('crear-cita')">
-        <mat-icon>add_circle</mat-icon>
-        <span>Crear cita</span>
+      <mat-list-item (click)="setActiveSection('crear-cita'); closeSidenavIfSmall()">
+        <mat-icon matListIcon>add_circle</mat-icon>
+        <span matLine>Crear cita</span>
       </mat-list-item>
-      <mat-list-item (click)="setActiveSection('modificar-cita')">
-        <mat-icon>edit</mat-icon>
-        <span>Modificar cita</span>
+      <mat-list-item (click)="setActiveSection('modificar-cita'); closeSidenavIfSmall()">
+        <mat-icon matListIcon>edit</mat-icon>
+        <span matLine>Modificar cita</span>
       </mat-list-item>
-      <mat-list-item (click)="setActiveSection('visualizar-citas')">
-        <mat-icon>visibility</mat-icon>
-        <span>Visualizar citas</span>
+      <mat-list-item (click)="setActiveSection('visualizar-citas'); closeSidenavIfSmall()">
+        <mat-icon matListIcon>visibility</mat-icon>
+        <span matLine>Visualizar citas</span>
       </mat-list-item>
-      <mat-list-item (click)="setActiveSection('datos-usuario')">
-        <mat-icon>person</mat-icon>
-        <span>Datos de usuario</span>
+      <mat-list-item (click)="setActiveSection('datos-usuario'); closeSidenavIfSmall()">
+        <mat-icon matListIcon>person</mat-icon>
+        <span matLine>Datos de usuario</span>
+      </mat-list-item>
+      <mat-divider></mat-divider>
+      <mat-list-item (click)="logout(); closeSidenavIfSmall()" class="logout">
+        <mat-icon matListIcon>exit_to_app</mat-icon>
+        <span matLine>Cerrar sesión</span>
       </mat-list-item>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>
-    <mat-toolbar>Dashboard Paciente</mat-toolbar>
+    <mat-toolbar color="primary">
+      <button mat-icon-button (click)="sidenav.toggle()" class="menu-button">
+        <mat-icon>menu</mat-icon>
+      </button>
+      Paciente
+    </mat-toolbar>
     <div class="content">
       <div *ngIf="activeSection === 'horarios'">
         <h2>Horarios de médicos</h2>
