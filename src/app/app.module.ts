@@ -12,15 +12,22 @@ import { HomeComponent } from './pages/home/home.component';
 import { MatInputModule } from '@angular/material/input';
 import { SignupComponent } from './pages/signup/signup.component';
 import { LoginComponent } from './pages/login/login.component';
-import { DashboardMedicoComponent } from './pages/dashboard-medico/dashboard-medico.component';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { DashboardPacienteComponent } from './pages/dashboard-paciente/dashboard-paciente.component';
+import { DashboardMedicoComponent } from './pages/dashboard-medico/dashboard-medico.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
    
-    
   ],
   imports: [
     BrowserModule,
@@ -31,11 +38,18 @@ import { DashboardPacienteComponent } from './pages/dashboard-paciente/dashboard
     MatInputModule,
     HttpClientModule,
     MatSnackBarModule,
+    MatSidenavModule,
+    MatListModule,
+    MatIconModule,
+    MatToolbarModule,
+    ReactiveFormsModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    DashboardPacienteComponent, 
+    DashboardMedicoComponent,
     SignupComponent,
-    LoginComponent,
-    DashboardPacienteComponent,
-    DashboardMedicoComponent
-
+    LoginComponent
   ],
   providers: [
     provideHttpClient(withFetch()),
