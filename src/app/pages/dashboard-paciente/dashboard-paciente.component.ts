@@ -18,7 +18,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import baseUrl from '../../services/helper';
-import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-dashboard-paciente',
@@ -38,7 +37,6 @@ import { AuthService } from '../../services/auth.service';
     MatButtonModule,
     MatTableModule,
     MatCardModule,
-    
   ],
   templateUrl: './dashboard-paciente.component.html',
   styleUrls: ['./dashboard-paciente.component.css']
@@ -52,8 +50,9 @@ export class DashboardPacienteComponent {
   usuarioForm: FormGroup;
   citas: any[] = [];
   horarios: any[] = [];
+  notifications: string[] = [];
   displayedColumns: string[] = ['fecha', 'hora', 'estado', 'medicoNombre'];
-  displayedColumnsHorarios: string[] = ['medicoNombre','diaSemana', 'horaInicio', 'horaFin'];
+  displayedColumnsHorarios: string[] = ['medicoNombre', 'diaSemana', 'horaInicio', 'horaFin'];
   editMode: boolean = false;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object, private router: Router, private fb: FormBuilder, private http: HttpClient) {
@@ -116,6 +115,7 @@ export class DashboardPacienteComponent {
 
     this.http.post(`${baseUrl}/citas/crear`, cita).subscribe(response => {
       console.log('Cita creada:', response);
+      this.notifications.push('Cita creada');
       this.getCitas(); // Actualizar la lista de citas después de crear una nueva
     }, error => {
       console.error('Error al crear la cita:', error);
@@ -144,9 +144,11 @@ export class DashboardPacienteComponent {
 
       this.http.put(`${baseUrl}/citas/${cita.id}`, cita, { headers }).subscribe(response => {
         console.log('Cita modificada:', response);
+        this.notifications.push('Cita modificada');
         if (cita.estado === 'CANCELADA') {
           this.http.delete(`${baseUrl}/citas/${cita.id}`, { headers }).subscribe(deleteResponse => {
             console.log('Cita eliminada:', deleteResponse);
+            this.notifications.push('Cita eliminada');
             this.getCitas(); // Actualizar la lista de citas después de eliminar una cita
           }, deleteError => {
             console.error('Error al eliminar la cita:', deleteError);
@@ -211,6 +213,7 @@ export class DashboardPacienteComponent {
 
       this.http.patch(`${baseUrl}/usuarios/actualizar`, usuarioData, { headers }).subscribe(response => {
         console.log('Datos del usuario actualizados:', response);
+        this.notifications.push('Datos del usuario actualizados');
         this.editMode = false;
       }, error => {
         console.error('Error al actualizar los datos del usuario:', error);
@@ -228,6 +231,7 @@ export class DashboardPacienteComponent {
 
       this.http.delete(`${baseUrl}/usuarios/eliminar`, { headers }).subscribe(response => {
         console.log('Usuario eliminado:', response);
+        this.notifications.push('Usuario eliminado');
         this.logout();
       }, error => {
         console.error('Error al eliminar el usuario:', error);
@@ -236,6 +240,11 @@ export class DashboardPacienteComponent {
         }
       });
     }
+  }
+
+  showNotifications() {
+    alert(this.notifications.join('\n'));
+    this.notifications = [];
   }
 
   logout() {

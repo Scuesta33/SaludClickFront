@@ -35,6 +35,11 @@
         <mat-icon>menu</mat-icon>
       </button>
       Paciente
+      <span class="spacer"></span>
+      <button mat-icon-button (click)="showNotifications()">
+        <mat-icon>notifications</mat-icon>
+        <span *ngIf="notifications.length" class="notification-badge">{{ notifications.length }}</span>
+      </button>
     </mat-toolbar>
     <div class="content">
       <div *ngIf="activeSection === 'horarios'">
