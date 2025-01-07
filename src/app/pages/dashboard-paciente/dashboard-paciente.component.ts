@@ -51,7 +51,9 @@ export class DashboardPacienteComponent {
   modificarCitaForm: FormGroup;
   usuarioForm: FormGroup;
   citas: any[] = [];
+  horarios: any[] = [];
   displayedColumns: string[] = ['fecha', 'hora', 'estado', 'medicoNombre'];
+  displayedColumnsHorarios: string[] = ['medicoNombre','diaSemana', 'horaInicio', 'horaFin'];
   editMode: boolean = false;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object, private router: Router, private fb: FormBuilder, private http: HttpClient) {

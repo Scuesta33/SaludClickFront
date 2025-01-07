@@ -39,7 +39,26 @@
     <div class="content">
       <div *ngIf="activeSection === 'horarios'">
         <h2>Horarios de médicos</h2>
-        <!-- Contenido para Horarios de médicos -->
+        <table mat-table [dataSource]="horarios" class="mat-elevation-z8">
+          <ng-container matColumnDef="medicoNombre">
+            <th mat-header-cell *matHeaderCellDef> Nombre del Médico </th>
+            <td mat-cell *matCellDef="let horario"> {{horario.medicoNombre}} </td>
+          </ng-container>
+          <ng-container matColumnDef="diaSemana">
+            <th mat-header-cell *matHeaderCellDef> Día de la Semana </th>
+            <td mat-cell *matCellDef="let horario"> {{horario.diaSemana}} </td>
+          </ng-container>
+          <ng-container matColumnDef="horaInicio">
+            <th mat-header-cell *matHeaderCellDef> Hora de Inicio </th>
+            <td mat-cell *matCellDef="let horario"> {{horario.horaInicio}} </td>
+          </ng-container>
+          <ng-container matColumnDef="horaFin">
+            <th mat-header-cell *matHeaderCellDef> Hora de Fin </th>
+            <td mat-cell *matCellDef="let horario"> {{horario.horaFin}} </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumnsHorarios"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumnsHorarios;"></tr>
+        </table>
       </div>
       <div *ngIf="activeSection === 'crear-cita'">
         <h2>Crear cita</h2>
