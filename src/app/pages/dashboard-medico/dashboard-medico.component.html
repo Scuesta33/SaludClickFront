@@ -54,8 +54,37 @@
         </form>
       </div>
       <div *ngIf="activeSection === 'modificar-citas'">
-        <h2>Modificar citas</h2>
-        <!-- Contenido para Modificar citas -->
+        <h2>Modificar cita</h2>
+        <form [formGroup]="modificarCitaForm" (ngSubmit)="onModificarSubmit()">
+          <mat-form-field appearance="fill">
+            <mat-label>ID de la Cita</mat-label>
+            <input matInput formControlName="id">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Fecha</mat-label>
+            <input matInput [matDatepicker]="modificarPicker" formControlName="fecha">
+            <mat-datepicker-toggle matSuffix [for]="modificarPicker"></mat-datepicker-toggle>
+            <mat-datepicker #modificarPicker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Hora</mat-label>
+            <input matInput type="time" formControlName="hora">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Estado</mat-label>
+            <mat-select formControlName="estado">
+              <mat-option value="PENDIENTE">PENDIENTE</mat-option>
+              <mat-option value="ACEPTADA">ACEPTADA</mat-option>
+              <mat-option value="RECHAZADA">RECHAZADA</mat-option>
+              <mat-option value="CANCELADA">CANCELADA</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Nombre del Médico</mat-label>
+            <input matInput formControlName="medicoNombre">
+          </mat-form-field>
+          <button mat-raised-button color="primary" type="submit">Modificar Cita</button>
+        </form>
       </div>
       <div *ngIf="activeSection === 'visualizar-consultas'">
         <h2>Visualizar consultas</h2>
