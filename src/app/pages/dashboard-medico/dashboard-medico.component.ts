@@ -17,6 +17,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import baseUrl from '../../services/helper';
 
 @Component({
@@ -51,10 +52,17 @@ export class DashboardMedicoComponent {
   diasSemana: string[] = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
   citas: any[] = [];
   consultas: any[] = [];
+  notifications: string[] = [];
   displayedColumnsConsultas: string[] = ['fecha', 'hora', 'estado', 'pacienteNombre'];
   editMode: boolean = false;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object, private router: Router, private fb: FormBuilder, private http: HttpClient) {
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private router: Router,
+    private fb: FormBuilder,
+    private http: HttpClient,
+    private snackBar: MatSnackBar
+  ) {
     this.isScreenSmall = isPlatformBrowser(this.platformId) ? window.innerWidth < 768 : false;
     this.disponibilidadForm = this.fb.group({
       diaSemana: [''],
@@ -104,6 +112,7 @@ export class DashboardMedicoComponent {
     const disponibilidadData = this.disponibilidadForm.value;
     this.http.post(`${baseUrl}/disponibilidades/crear`, disponibilidadData).subscribe(response => {
       console.log('Disponibilidad creada:', response);
+      this.notifications.push('Disponibilidad creada');
       // Aquí puedes agregar lógica adicional, como actualizar una lista de disponibilidades
     }, error => {
       console.error('Error al crear la disponibilidad:', error);
@@ -129,9 +138,11 @@ export class DashboardMedicoComponent {
 
       this.http.put(`${baseUrl}/citas/${cita.id}`, cita, { headers }).subscribe(response => {
         console.log('Cita modificada:', response);
+        this.notifications.push('Cita modificada');
         if (cita.estado === 'CANCELADA') {
           this.http.delete(`${baseUrl}/citas/${cita.id}`, { headers }).subscribe(deleteResponse => {
             console.log('Cita eliminada:', deleteResponse);
+            this.notifications.push('Cita eliminada');
             this.getCitas();
           }, deleteError => {
             console.error('Error al eliminar la cita:', deleteError);
@@ -209,6 +220,7 @@ export class DashboardMedicoComponent {
 
       this.http.patch(`${baseUrl}/usuarios/actualizar`, usuarioData, { headers }).subscribe(response => {
         console.log('Datos del usuario actualizados:', response);
+        this.notifications.push('Datos del usuario actualizados');
         this.editMode = false;
       }, error => {
         console.error('Error al actualizar los datos del usuario:', error);
@@ -226,6 +238,7 @@ export class DashboardMedicoComponent {
 
       this.http.delete(`${baseUrl}/usuarios/eliminar`, { headers }).subscribe(response => {
         console.log('Usuario eliminado:', response);
+        this.notifications.push('Usuario eliminado');
         this.logout();
       }, error => {
         console.error('Error al eliminar el usuario:', error);
@@ -236,9 +249,26 @@ export class DashboardMedicoComponent {
     }
   }
 
+  showNotifications() {
+    if (this.notifications.length > 0) {
+      this.notifications.forEach(notification => {
+        this.snackBar.open(notification, 'Cerrar', {
+          duration: 3000,
+        });
+      });
+      this.notifications = [];
+    } else {
+      this.snackBar.open('No hay notificaciones nuevas', 'Cerrar', {
+        duration: 3000,
+      });
+    }
+  }
+
   logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userRole');
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('userRole');
+    }
     this.router.navigate(['']);
   }
 }

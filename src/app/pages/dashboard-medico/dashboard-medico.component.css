@@ -52,4 +52,18 @@ mat-list-item:hover {
   .menu-button {
     display: inline-block;
   }
+
+}
+.spacer {
+  flex: 1 1 auto;
+}
+
+.notification-badge {
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 0 6px;
+}
+.sidenav-container {
+  height: 100vh;
 }
