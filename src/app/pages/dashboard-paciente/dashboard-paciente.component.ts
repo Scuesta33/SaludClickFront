@@ -15,6 +15,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTableModule } from '@angular/material/table';
+import { MatCardModule } from '@angular/material/card';
 import baseUrl from '../../services/helper';
 import { AuthService } from '../../services/auth.service';
 
@@ -33,7 +35,10 @@ import { AuthService } from '../../services/auth.service';
     MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatButtonModule
+    MatButtonModule,
+    MatTableModule,
+    MatCardModule,
+    
   ],
   templateUrl: './dashboard-paciente.component.html',
   styleUrls: ['./dashboard-paciente.component.css']
@@ -45,14 +50,11 @@ export class DashboardPacienteComponent {
   citaForm: FormGroup;
   modificarCitaForm: FormGroup;
   usuarioForm: FormGroup;
+  citas: any[] = [];
+  displayedColumns: string[] = ['fecha', 'hora', 'estado', 'medicoNombre'];
+  editMode: boolean = false;
 
-  constructor(
-    @Inject(PLATFORM_ID) private platformId: Object,
-    private router: Router,
-    private fb: FormBuilder,
-    private http: HttpClient,
-    private authService: AuthService
-  ) {
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private router: Router, private fb: FormBuilder, private http: HttpClient) {
     this.isScreenSmall = isPlatformBrowser(this.platformId) ? window.innerWidth < 768 : false;
     this.citaForm = this.fb.group({
       fecha: [''],
@@ -77,6 +79,7 @@ export class DashboardPacienteComponent {
 
     if (isPlatformBrowser(this.platformId)) {
       this.getUsuarioData();
+      this.getCitas();
     }
   }
 
@@ -109,10 +112,9 @@ export class DashboardPacienteComponent {
       medicoNombre: citaData.medicoNombre
     };
 
-    const headers = this.authService.getAuthHeaders();
-
-    this.http.post(`${baseUrl}/citas/crear`, cita, { headers, responseType: 'json' }).subscribe(response => {
+    this.http.post(`${baseUrl}/citas/crear`, cita).subscribe(response => {
       console.log('Cita creada:', response);
+      this.getCitas(); // Actualizar la lista de citas después de crear una nueva
     }, error => {
       console.error('Error al crear la cita:', error);
       if (error.status === 0) {
@@ -134,26 +136,48 @@ export class DashboardPacienteComponent {
       medicoNombre: citaData.medicoNombre
     };
 
-    const headers = this.authService.getAuthHeaders();
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    this.http.put(`${baseUrl}/citas/${cita.id}`, cita, { headers, responseType: 'json' }).subscribe(response => {
-      console.log('Cita modificada:', response);
-      if (cita.estado === 'CANCELADA') {
-        this.http.delete(`${baseUrl}/citas/${cita.id}`, { headers }).subscribe(deleteResponse => {
-          console.log('Cita eliminada:', deleteResponse);
-        }, deleteError => {
-          console.error('Error al eliminar la cita:', deleteError);
-          if (deleteError.status === 0) {
-            console.error('El backend no está activado.');
-          }
-        });
-      }
-    }, error => {
-      console.error('Error al modificar la cita:', error);
-      if (error.status === 0) {
-        console.error('El backend no está activado.');
-      }
-    });
+      this.http.put(`${baseUrl}/citas/${cita.id}`, cita, { headers }).subscribe(response => {
+        console.log('Cita modificada:', response);
+        if (cita.estado === 'CANCELADA') {
+          this.http.delete(`${baseUrl}/citas/${cita.id}`, { headers }).subscribe(deleteResponse => {
+            console.log('Cita eliminada:', deleteResponse);
+            this.getCitas(); // Actualizar la lista de citas después de eliminar una cita
+          }, deleteError => {
+            console.error('Error al eliminar la cita:', deleteError);
+            if (deleteError.status === 0) {
+              console.error('El backend no está activado.');
+            }
+          });
+        } else {
+          this.getCitas(); // Actualizar la lista de citas después de modificar una cita
+        }
+      }, error => {
+        console.error('Error al modificar la cita:', error);
+        if (error.status === 0) {
+          console.error('El backend no está activado.');
+        }
+      });
+    }
+  }
+
+  getCitas() {
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      this.http.get(`${baseUrl}/citas`, { headers }).subscribe((data: any) => {
+        this.citas = data;
+      }, error => {
+        console.error('Error al obtener las citas:', error);
+        if (error.status === 0) {
+          console.error('El backend no está activado.');
+        }
+      });
+    }
   }
 
   getUsuarioData() {
@@ -161,7 +185,7 @@ export class DashboardPacienteComponent {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-      this.http.get(`${baseUrl}/usuarios/datos`, { headers, responseType: 'json' }).subscribe((data: any) => {
+      this.http.get(`${baseUrl}/usuarios/datos`, { headers }).subscribe((data: any) => {
         this.usuarioForm.patchValue({
           nombre: data.nombre,
           email: data.email,
@@ -183,8 +207,9 @@ export class DashboardPacienteComponent {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-      this.http.patch(`${baseUrl}/usuarios/actualizar`, usuarioData, { headers, responseType: 'json' }).subscribe(response => {
+      this.http.patch(`${baseUrl}/usuarios/actualizar`, usuarioData, { headers }).subscribe(response => {
         console.log('Datos del usuario actualizados:', response);
+        this.editMode = false;
       }, error => {
         console.error('Error al actualizar los datos del usuario:', error);
         if (error.status === 0) {
@@ -199,7 +224,7 @@ export class DashboardPacienteComponent {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-      this.http.delete(`${baseUrl}/usuarios/eliminar`, { headers, responseType: 'json' }).subscribe(response => {
+      this.http.delete(`${baseUrl}/usuarios/eliminar`, { headers }).subscribe(response => {
         console.log('Usuario eliminado:', response);
         this.logout();
       }, error => {
