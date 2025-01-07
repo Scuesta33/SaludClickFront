@@ -15,6 +15,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatCardModule } from '@angular/material/card';
 import baseUrl from '../../services/helper';
 
 @Component({
@@ -32,7 +33,8 @@ import baseUrl from '../../services/helper';
     MatSelectModule,
     MatOptionModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatCardModule
   ],
   templateUrl: './dashboard-medico.component.html',
   styleUrls: ['./dashboard-medico.component.css']
@@ -43,8 +45,10 @@ export class DashboardMedicoComponent {
   isScreenSmall: boolean;
   disponibilidadForm: FormGroup;
   modificarCitaForm: FormGroup;
+  usuarioForm: FormGroup;
   diasSemana: string[] = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
   citas: any[] = [];
+  editMode: boolean = false;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object, private router: Router, private fb: FormBuilder, private http: HttpClient) {
     this.isScreenSmall = isPlatformBrowser(this.platformId) ? window.innerWidth < 768 : false;
@@ -60,6 +64,18 @@ export class DashboardMedicoComponent {
       estado: [''],
       medicoNombre: ['']
     });
+    this.usuarioForm = this.fb.group({
+      nombre: [''],
+      email: [''],
+      telefono: [''],
+      password: [''],
+      rol: ['']
+    });
+
+    if (isPlatformBrowser(this.platformId)) {
+      this.getUsuarioData();
+      this.getCitas();
+    }
   }
 
   @HostListener('window:resize', ['$event'])
@@ -136,6 +152,62 @@ export class DashboardMedicoComponent {
         this.citas = data;
       }, error => {
         console.error('Error al obtener las citas:', error);
+        if (error.status === 0) {
+          console.error('El backend no está activado.');
+        }
+      });
+    }
+  }
+
+  getUsuarioData() {
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      this.http.get(`${baseUrl}/usuarios/datos`, { headers }).subscribe((data: any) => {
+        this.usuarioForm.patchValue({
+          nombre: data.nombre,
+          email: data.email,
+          telefono: data.telefono,
+          rol: data.rol
+        });
+      }, error => {
+        console.error('Error al obtener los datos del usuario:', error);
+        if (error.status === 0) {
+          console.error('El backend no está activado.');
+        }
+      });
+    }
+  }
+
+  onUsuarioSubmit() {
+    const usuarioData = this.usuarioForm.value;
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      this.http.patch(`${baseUrl}/usuarios/actualizar`, usuarioData, { headers }).subscribe(response => {
+        console.log('Datos del usuario actualizados:', response);
+        this.editMode = false;
+      }, error => {
+        console.error('Error al actualizar los datos del usuario:', error);
+        if (error.status === 0) {
+          console.error('El backend no está activado.');
+        }
+      });
+    }
+  }
+
+  onEliminarUsuario() {
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      this.http.delete(`${baseUrl}/usuarios/eliminar`, { headers }).subscribe(response => {
+        console.log('Usuario eliminado:', response);
+        this.logout();
+      }, error => {
+        console.error('Error al eliminar el usuario:', error);
         if (error.status === 0) {
           console.error('El backend no está activado.');
         }

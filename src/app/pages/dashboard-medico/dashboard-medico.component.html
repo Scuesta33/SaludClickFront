@@ -92,7 +92,48 @@
       </div>
       <div *ngIf="activeSection === 'datos-usuario'">
         <h2>Datos del usuario</h2>
-        <!-- Contenido para Datos del usuario -->
+        <mat-card>
+          <mat-card-header>
+            
+          </mat-card-header>
+          <mat-card-content>
+            <p><strong>Nombre:</strong> {{usuarioForm.get('nombre')?.value}}</p>
+            <p><strong>Email:</strong> {{usuarioForm.get('email')?.value}}</p>
+            <p><strong>Teléfono:</strong> {{usuarioForm.get('telefono')?.value}}</p>
+            <p><strong>Rol:</strong> {{usuarioForm.get('rol')?.value}}</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button color="primary" (click)="editMode = true">Editar</button>
+          </mat-card-actions>
+        </mat-card>
+        <form *ngIf="editMode" [formGroup]="usuarioForm" (ngSubmit)="onUsuarioSubmit()">
+          <mat-form-field appearance="fill">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="nombre">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Teléfono</mat-label>
+            <input matInput formControlName="telefono">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Contraseña</mat-label>
+            <input matInput type="password" formControlName="password">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Rol</mat-label>
+            <mat-select formControlName="rol">
+              <mat-option value="MEDICO">Médico</mat-option>
+              <mat-option value="PACIENTE">Paciente</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <button mat-raised-button color="primary" type="submit">Actualizar Datos</button>
+          <button mat-raised-button color="warn" (click)="onEliminarUsuario()">Eliminar Usuario</button>
+          <button mat-raised-button (click)="editMode = false">Cancelar</button>
+        </form>
       </div>
     </div>
   </mat-sidenav-content>
