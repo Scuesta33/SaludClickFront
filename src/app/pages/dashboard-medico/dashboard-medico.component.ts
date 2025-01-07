@@ -16,6 +16,7 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatCardModule } from '@angular/material/card';
+import { MatTableModule } from '@angular/material/table';
 import baseUrl from '../../services/helper';
 
 @Component({
@@ -34,7 +35,8 @@ import baseUrl from '../../services/helper';
     MatOptionModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatCardModule
+    MatCardModule,
+    MatTableModule
   ],
   templateUrl: './dashboard-medico.component.html',
   styleUrls: ['./dashboard-medico.component.css']
@@ -48,6 +50,8 @@ export class DashboardMedicoComponent {
   usuarioForm: FormGroup;
   diasSemana: string[] = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
   citas: any[] = [];
+  consultas: any[] = [];
+  displayedColumnsConsultas: string[] = ['fecha', 'hora', 'estado', 'pacienteNombre'];
   editMode: boolean = false;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object, private router: Router, private fb: FormBuilder, private http: HttpClient) {
@@ -75,6 +79,7 @@ export class DashboardMedicoComponent {
     if (isPlatformBrowser(this.platformId)) {
       this.getUsuarioData();
       this.getCitas();
+      this.getConsultas();
     }
   }
 
@@ -152,6 +157,22 @@ export class DashboardMedicoComponent {
         this.citas = data;
       }, error => {
         console.error('Error al obtener las citas:', error);
+        if (error.status === 0) {
+          console.error('El backend no está activado.');
+        }
+      });
+    }
+  }
+
+  getConsultas() {
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      this.http.get(`${baseUrl}/consultas`, { headers }).subscribe((data: any) => {
+        this.consultas = data;
+      }, error => {
+        console.error('Error al obtener las consultas:', error);
         if (error.status === 0) {
           console.error('El backend no está activado.');
         }
