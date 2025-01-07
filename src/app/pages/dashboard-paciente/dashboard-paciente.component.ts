@@ -17,6 +17,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import baseUrl from '../../services/helper';
 
 @Component({
@@ -55,7 +56,13 @@ export class DashboardPacienteComponent {
   displayedColumnsHorarios: string[] = ['medicoNombre', 'diaSemana', 'horaInicio', 'horaFin'];
   editMode: boolean = false;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object, private router: Router, private fb: FormBuilder, private http: HttpClient) {
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private router: Router,
+    private fb: FormBuilder,
+    private http: HttpClient,
+    private snackBar: MatSnackBar
+  ) {
     this.isScreenSmall = isPlatformBrowser(this.platformId) ? window.innerWidth < 768 : false;
     this.citaForm = this.fb.group({
       fecha: [''],
@@ -243,8 +250,18 @@ export class DashboardPacienteComponent {
   }
 
   showNotifications() {
-    alert(this.notifications.join('\n'));
-    this.notifications = [];
+    if (this.notifications.length > 0) {
+      this.notifications.forEach(notification => {
+        this.snackBar.open(notification, 'Cerrar', {
+          duration: 3000,
+        });
+      });
+      this.notifications = [];
+    } else {
+      this.snackBar.open('No hay notificaciones nuevas', 'Cerrar', {
+        duration: 3000,
+      });
+    }
   }
 
   logout() {
