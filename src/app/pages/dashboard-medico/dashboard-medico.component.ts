@@ -20,6 +20,14 @@ import { MatTableModule } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import baseUrl from '../../services/helper';
 
+interface Usuario {
+  idUsuario: string;
+  nombre: string;
+  email: string;
+  telefono: string;
+  rol: string;
+}
+
 @Component({
   selector: 'app-dashboard-medico',
   standalone: true,
@@ -77,6 +85,7 @@ export class DashboardMedicoComponent {
       medicoNombre: ['']
     });
     this.usuarioForm = this.fb.group({
+      id: [''],
       nombre: [''],
       email: [''],
       telefono: [''],
@@ -192,28 +201,26 @@ export class DashboardMedicoComponent {
   }
 
   getUsuarioData() {
-    if (isPlatformBrowser(this.platformId)) {
-      const token = localStorage.getItem('token');
-      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
-      this.http.get(`${baseUrl}/usuarios/datos`, { headers }).subscribe((data: any) => {
-        this.usuarioForm.patchValue({
-          nombre: data.nombre,
-          email: data.email,
-          telefono: data.telefono,
-          rol: data.rol
-        });
-      }, error => {
-        console.error('Error al obtener los datos del usuario:', error);
-        if (error.status === 0) {
-          console.error('El backend no está activado.');
-        }
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  
+    this.http.get<Usuario>(`${baseUrl}/usuarios/datos`, { headers }).subscribe(usuario => {
+      this.usuarioForm.patchValue({
+        id: usuario.idUsuario, // Asegúrate de asignar el ID del usuario aquí
+        nombre: usuario.nombre,
+        email: usuario.email,
+        telefono: usuario.telefono,
+        contrasena: '', // No cargar la contraseña
+        rol: usuario.rol
       });
-    }
+    }, error => {
+      console.error('Error al obtener los datos del usuario:', error);
+    });
   }
 
   onUsuarioSubmit() {
-    const usuarioData = this.usuarioForm.value;
+    const usuarioData = { ...this.usuarioForm.value };
+    delete usuarioData.id; // Excluir el campo 'id'
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
@@ -241,17 +248,24 @@ export class DashboardMedicoComponent {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
-      this.http.delete(`${baseUrl}/usuarios/eliminar`, { headers }).subscribe(response => {
-        console.log('Usuario eliminado:', response);
-        this.notifications.push('Usuario eliminado');
-        this.logout();
-      }, error => {
-        console.error('Error al eliminar el usuario:', error);
-        if (error.status === 0) {
-          console.error('El backend no está activado.');
-        }
-      });
+      const idControl = this.usuarioForm.get('id');
+  
+      if (idControl && idControl.value) {
+        const idUsuario = idControl.value;
+  
+        this.http.delete(`${baseUrl}/usuarios/eliminar/${idUsuario}`, { headers, responseType: 'json' }).subscribe(response => {
+          console.log('Usuario eliminado:', response);
+          this.notifications.push('Usuario eliminado');
+          this.router.navigate(['/login']); // Redirigir al login después de eliminar el usuario
+        }, error => {
+          console.error('Error al eliminar el usuario:', error);
+          if (error.status === 0) {
+            console.error('El backend no está activado.');
+          }
+        });
+      } else {
+        console.error('El control de ID del usuario es nulo o no tiene valor.');
+      }
     }
   }
 
