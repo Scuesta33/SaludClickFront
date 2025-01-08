@@ -80,7 +80,7 @@ export class DashboardMedicoComponent {
       nombre: [''],
       email: [''],
       telefono: [''],
-      password: [''],
+      contrasena: [''],
       rol: ['']
     });
 
@@ -217,11 +217,18 @@ export class DashboardMedicoComponent {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
+  
       this.http.patch(`${baseUrl}/usuarios/actualizar`, usuarioData, { headers }).subscribe(response => {
         console.log('Datos del usuario actualizados:', response);
         this.notifications.push('Datos del usuario actualizados');
         this.editMode = false;
+  
+        // Redirigir al dashboard correspondiente según el rol actualizado
+        if (usuarioData.rol === 'MEDICO') {
+          this.router.navigate(['/dashboard-medico']);
+        } else if (usuarioData.rol === 'PACIENTE') {
+          this.router.navigate(['/dashboard-paciente']);
+        }
       }, error => {
         console.error('Error al actualizar los datos del usuario:', error);
         if (error.status === 0) {
@@ -230,7 +237,6 @@ export class DashboardMedicoComponent {
       });
     }
   }
-
   onEliminarUsuario() {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
