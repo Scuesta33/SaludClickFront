@@ -20,6 +20,14 @@ import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import baseUrl from '../../services/helper';
 
+interface Usuario {
+  idUsuario: string;
+  nombre: string;
+  email: string;
+  telefono: string;
+  rol: string;
+}
+
 @Component({
   selector: 'app-dashboard-paciente',
   standalone: true,
@@ -56,40 +64,43 @@ export class DashboardPacienteComponent {
   displayedColumnsHorarios: string[] = ['medicoNombre', 'diaSemana', 'horaInicio', 'horaFin'];
   editMode: boolean = false;
 
-  constructor(
-    @Inject(PLATFORM_ID) private platformId: Object,
-    private router: Router,
-    private fb: FormBuilder,
-    private http: HttpClient,
-    private snackBar: MatSnackBar
-  ) {
-    this.isScreenSmall = isPlatformBrowser(this.platformId) ? window.innerWidth < 768 : false;
-    this.citaForm = this.fb.group({
-      fecha: [''],
-      hora: [''],
-      estado: [''],
-      medicoNombre: ['']
-    });
-    this.modificarCitaForm = this.fb.group({
-      id: [''],
-      fecha: [''],
-      hora: [''],
-      estado: [''],
-      medicoNombre: ['']
-    });
-    this.usuarioForm = this.fb.group({
-      nombre: [''],
-      email: [''],
-      telefono: [''],
-      contrasena: [''],
-      rol: ['']
-    });
+  // ...existing code...
+constructor(
+  @Inject(PLATFORM_ID) private platformId: Object,
+  private router: Router,
+  private fb: FormBuilder,
+  private http: HttpClient,
+  private snackBar: MatSnackBar
+) {
+  this.isScreenSmall = isPlatformBrowser(this.platformId) ? window.innerWidth < 768 : false;
+  this.citaForm = this.fb.group({
+    fecha: [''],
+    hora: [''],
+    estado: [''],
+    medicoNombre: ['']
+  });
+  this.modificarCitaForm = this.fb.group({
+    id: [''],
+    fecha: [''],
+    hora: [''],
+    estado: [''],
+    medicoNombre: ['']
+  });
+  this.usuarioForm = this.fb.group({
+    id: [''], // Asegúrate de que el control 'id' esté definido aquí
+    nombre: [''],
+    email: [''],
+    telefono: [''],
+    contrasena: [''],
+    rol: ['']
+  });
 
-    if (isPlatformBrowser(this.platformId)) {
-      this.getUsuarioData();
-      this.getCitas();
-    }
+  if (isPlatformBrowser(this.platformId)) {
+    this.getUsuarioData();
+    this.getCitas();
   }
+}
+// ...existing code...
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
@@ -191,71 +202,78 @@ export class DashboardPacienteComponent {
     }
   }
 
-  getUsuarioData() {
-    if (isPlatformBrowser(this.platformId)) {
-      const token = localStorage.getItem('token');
-      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  // ...existing code...
+getUsuarioData() {
+  const token = localStorage.getItem('token');
+  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-      this.http.get(`${baseUrl}/usuarios/datos`, { headers }).subscribe((data: any) => {
-        this.usuarioForm.patchValue({
-          nombre: data.nombre,
-          email: data.email,
-          telefono: data.telefono,
-          rol: data.rol
-        });
-      }, error => {
-        console.error('Error al obtener los datos del usuario:', error);
-        if (error.status === 0) {
-          console.error('El backend no está activado.');
-        }
-      });
-    }
-  }
-  onUsuarioSubmit() {
-    const usuarioData = this.usuarioForm.value;
-    if (isPlatformBrowser(this.platformId)) {
-      const token = localStorage.getItem('token');
-      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  this.http.get<Usuario>(`${baseUrl}/usuarios/datos`, { headers }).subscribe(usuario => {
+    this.usuarioForm.patchValue({
+      id: usuario.idUsuario, // Asegúrate de asignar el ID del usuario aquí
+      nombre: usuario.nombre,
+      email: usuario.email,
+      telefono: usuario.telefono,
+      contrasena: '', // No cargar la contraseña
+      rol: usuario.rol
+    });
+  }, error => {
+    console.error('Error al obtener los datos del usuario:', error);
+  });
+}
+// ...existing code...
+onUsuarioSubmit() {
+  const usuarioData = { ...this.usuarioForm.value };
+  delete usuarioData.id; // Excluir el campo 'id'
   
-      this.http.patch(`${baseUrl}/usuarios/actualizar`, usuarioData, { headers }).subscribe(response => {
-        console.log('Datos del usuario actualizados:', response);
-        this.notifications.push('Datos del usuario actualizados');
-        this.editMode = false;
-  
-        // Redirigir al dashboard correspondiente según el rol actualizado
-        if (usuarioData.rol === 'MEDICO') {
-          this.router.navigate(['/dashboard-medico']);
-        } else if (usuarioData.rol === 'PACIENTE') {
-          this.router.navigate(['/dashboard-paciente']);
-        }
-      }, error => {
-        console.error('Error al actualizar los datos del usuario:', error);
-        if (error.status === 0) {
-          console.error('El backend no está activado.');
-        }
-      });
-    }
+  if (isPlatformBrowser(this.platformId)) {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    this.http.patch(`${baseUrl}/usuarios/actualizar`, usuarioData, { headers }).subscribe(response => {
+      console.log('Datos del usuario actualizados:', response);
+      this.notifications.push('Datos del usuario actualizados');
+      this.editMode = false;
+
+      // Redirigir al dashboard correspondiente según el rol actualizado
+      if (usuarioData.rol === 'MEDICO') {
+        this.router.navigate(['/dashboard-medico']);
+      } else if (usuarioData.rol === 'PACIENTE') {
+        this.router.navigate(['/dashboard-paciente']);
+      }
+    }, error => {
+      console.error('Error al actualizar los datos del usuario:', error);
+      if (error.status === 0) {
+        console.error('El backend no está activado.');
+      }
+    });
   }
+}
   
 
   onEliminarUsuario() {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
-      this.http.delete(`${baseUrl}/usuarios/eliminar`, { headers }).subscribe(response => {
-        console.log('Usuario eliminado:', response);
-        this.notifications.push('Usuario eliminado');
-        this.logout();
-      }, error => {
-        console.error('Error al eliminar el usuario:', error);
-        if (error.status === 0) {
-          console.error('El backend no está activado.');
-        }
-      });
+      const idControl = this.usuarioForm.get('id');
+  
+      if (idControl && idControl.value) {
+        const idUsuario = idControl.value;
+  
+        this.http.delete(`${baseUrl}/usuarios/eliminar/${idUsuario}`, { headers, responseType: 'json' }).subscribe(response => {
+          console.log('Usuario eliminado:', response);
+          this.notifications.push('Usuario eliminado');
+          this.router.navigate(['/login']); // Redirigir al login después de eliminar el usuario
+        }, error => {
+          console.error('Error al eliminar el usuario:', error);
+          if (error.status === 0) {
+            console.error('El backend no está activado.');
+          }
+        });
+      } else {
+        console.error('El control de ID del usuario es nulo o no tiene valor.');
+      }
     }
   }
-
   showNotifications() {
     if (this.notifications.length > 0) {
       this.notifications.forEach(notification => {
