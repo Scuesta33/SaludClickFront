@@ -118,14 +118,32 @@ export class DashboardMedicoComponent {
   }
 
   onSubmitDisponibilidad() {
-    const disponibilidadData = this.disponibilidadForm.value;
-    this.http.post(`${baseUrl}/disponibilidades/crear`, disponibilidadData).subscribe(response => {
-      console.log('Disponibilidad creada:', response);
-      this.notifications.push('Disponibilidad creada');
-      // Aquí puedes agregar lógica adicional, como actualizar una lista de disponibilidades
-    }, error => {
-      console.error('Error al crear la disponibilidad:', error);
-    });
+    const disponibilidadData = [this.disponibilidadForm.value]; // Enviar como lista
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        this.snackBar.open('No se encontró el token de autenticación', 'Cerrar', {
+          duration: 3000,
+        });
+        return;
+      }
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  
+      this.http.post(`${baseUrl}/disponibilidad/crear`, disponibilidadData, { headers }).subscribe(response => {
+        console.log('Disponibilidad creada:', response);
+        this.notifications.push('Disponibilidad creada');
+      }, error => {
+        console.error('Error al crear la disponibilidad:', error);
+        if (error.status === 0) {
+          console.error('El backend no está activado.');
+        } else if (error.status === 403) {
+          console.error('No tienes permiso para realizar esta acción.');
+          this.snackBar.open('No tienes permiso para realizar esta acción.', 'Cerrar', {
+            duration: 3000,
+          });
+        }
+      });
+    }
   }
 
   onModificarSubmit() {
