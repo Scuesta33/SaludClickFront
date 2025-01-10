@@ -76,7 +76,7 @@ constructor(
   this.citaForm = this.fb.group({
     fecha: [''],
     hora: [''],
-    estado: [''],
+    estado: ['PENDIENTE, ACEPTADA, RECHAZADA, CANCELADA'],
     medicoNombre: ['']
   });
   this.modificarCitaForm = this.fb.group({
@@ -118,20 +118,35 @@ constructor(
       this.sidenav.close();
     }
   }
+  // ...existing code...
 
-  onSubmit() {
-    const citaData = this.citaForm.value;
-    const fechaHora = new Date(citaData.fecha);
-    const [hours, minutes] = citaData.hora.split(':');
-    fechaHora.setHours(hours, minutes);
+onSubmit() {
+  const citaData = this.citaForm.value;
+  const fechaHora = new Date(citaData.fecha);
+  const [hours, minutes] = citaData.hora.split(':');
+  fechaHora.setHours(hours, minutes);
 
-    const cita = {
-      fecha: fechaHora.toISOString(),
-      estado: citaData.estado,
-      medicoNombre: citaData.medicoNombre
-    };
+  const cita = {
+    fecha: fechaHora.toISOString(), // Ensure this is in the correct format
+    estado: citaData.estado, // Ensure this matches the EstadoCita enum in the backend
+    medicoNombre: citaData.medicoNombre // Ensure this is the email of the doctor
+  };
 
-    this.http.post(`${baseUrl}/citas/crear`, cita).subscribe(response => {
+  if (!cita.fecha || !cita.estado || !cita.medicoNombre) {
+    console.error('Datos incompletos para crear la cita:', cita);
+    return;
+  }
+
+  if (isPlatformBrowser(this.platformId)) {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('No token found');
+      return;
+    }
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    this.http.post(`${baseUrl}/citas/crear`, cita, { headers }).subscribe(response => {
       console.log('Cita creada:', response);
       this.notifications.push('Cita creada');
       this.getCitas(); // Actualizar la lista de citas después de crear una nueva
@@ -139,10 +154,18 @@ constructor(
       console.error('Error al crear la cita:', error);
       if (error.status === 0) {
         console.error('El backend no está activado.');
+      } else if (error.status === 400) {
+        console.error('Solicitud incorrecta. Verifica los datos enviados:', cita);
+        if (error.error) {
+          console.error('Detalles del error:', error.error);
+        }
       }
     });
   }
+}
 
+// ...existing code...
+ 
   onModificarSubmit() {
     const citaData = this.modificarCitaForm.value;
     const fechaHora = new Date(citaData.fecha);
