@@ -27,7 +27,12 @@ interface Usuario {
   telefono: string;
   rol: string;
 }
-
+interface Cita {
+  id: number;
+  fecha: string;
+  estado: string;
+  medicoNombre: string;
+}
 @Component({
   selector: 'app-dashboard-paciente',
   standalone: true,
@@ -213,9 +218,15 @@ onSubmit() {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
-      this.http.get(`${baseUrl}/citas`, { headers }).subscribe((data: any) => {
-        this.citas = data;
+  
+      this.http.get<Cita[]>(`${baseUrl}/citas`, { headers }).subscribe((data: Cita[]) => {
+        this.citas = data.map(cita => {
+          return {
+            ...cita,
+            hora: new Date(cita.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            medicoNombre: cita.medicoNombre || 'Desconocido'
+          };
+        });
       }, error => {
         console.error('Error al obtener las citas:', error);
         if (error.status === 0) {
