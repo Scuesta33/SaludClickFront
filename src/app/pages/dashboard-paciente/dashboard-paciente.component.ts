@@ -81,7 +81,7 @@ constructor(
   this.citaForm = this.fb.group({
     fecha: [''],
     hora: [''],
-    estado: ['PENDIENTE, ACEPTADA, RECHAZADA, CANCELADA'],
+    estado: ['PENDIENTE'],
     medicoNombre: ['']
   });
   this.modificarCitaForm = this.fb.group({
