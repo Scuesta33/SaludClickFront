@@ -102,20 +102,13 @@
             <mat-label>Hora</mat-label>
             <input matInput type="time" formControlName="hora">
           </mat-form-field>
-          <mat-form-field appearance="fill">
-            <mat-label>Estado</mat-label>
-            <mat-select formControlName="estado">
-              <mat-option value="PENDIENTE">PENDIENTE</mat-option>
-              <mat-option value="ACEPTADA">ACEPTADA</mat-option>
-              <mat-option value="RECHAZADA">RECHAZADA</mat-option>
-              <mat-option value="CANCELADA">CANCELADA</mat-option>
-            </mat-select>
-          </mat-form-field>
+         
           <mat-form-field appearance="fill">
             <mat-label>Nombre del Médico</mat-label>
             <input matInput formControlName="medicoNombre">
           </mat-form-field>
           <button mat-raised-button color="primary" type="submit">Modificar Cita</button>
+          <button mat-raised-button color="warn" type="button" (click)="eliminarCita(modificarCitaForm.value.id)">Eliminar Cita</button>
         </form>
       </div>
       <div *ngIf="activeSection === 'visualizar-citas'">

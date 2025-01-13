@@ -88,7 +88,7 @@ constructor(
     id: [''],
     fecha: [''],
     hora: [''],
-    estado: [''],
+    estado: ['PENDIENTE'],
     medicoNombre: ['']
   });
   this.usuarioForm = this.fb.group({
@@ -171,48 +171,7 @@ onSubmit() {
 
 // ...existing code...
  
-  onModificarSubmit() {
-    const citaData = this.modificarCitaForm.value;
-    const fechaHora = new Date(citaData.fecha);
-    const [hours, minutes] = citaData.hora.split(':');
-    fechaHora.setHours(hours, minutes);
-
-    const cita = {
-      id: citaData.id,
-      fecha: fechaHora.toISOString(),
-      estado: citaData.estado,
-      medicoNombre: citaData.medicoNombre
-    };
-
-    if (isPlatformBrowser(this.platformId)) {
-      const token = localStorage.getItem('token');
-      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
-      this.http.put(`${baseUrl}/citas/${cita.id}`, cita, { headers }).subscribe(response => {
-        console.log('Cita modificada:', response);
-        this.notifications.push('Cita modificada');
-        if (cita.estado === 'CANCELADA') {
-          this.http.delete(`${baseUrl}/citas/${cita.id}`, { headers }).subscribe(deleteResponse => {
-            console.log('Cita eliminada:', deleteResponse);
-            this.notifications.push('Cita eliminada');
-            this.getCitas(); // Actualizar la lista de citas después de eliminar una cita
-          }, deleteError => {
-            console.error('Error al eliminar la cita:', deleteError);
-            if (deleteError.status === 0) {
-              console.error('El backend no está activado.');
-            }
-          });
-        } else {
-          this.getCitas(); // Actualizar la lista de citas después de modificar una cita
-        }
-      }, error => {
-        console.error('Error al modificar la cita:', error);
-        if (error.status === 0) {
-          console.error('El backend no está activado.');
-        }
-      });
-    }
-  }
+ 
 
   getCitas() {
     if (isPlatformBrowser(this.platformId)) {
@@ -235,7 +194,70 @@ onSubmit() {
       });
     }
   }
+  
+// ...existing code...
 
+onModificarSubmit() {
+  const citaData = this.modificarCitaForm.value;
+  const fechaHora = new Date(citaData.fecha);
+  const [hours, minutes] = citaData.hora.split(':');
+  fechaHora.setHours(hours, minutes);
+
+  const cita = {
+    id: citaData.id,
+    fecha: fechaHora.toISOString(), // Ensure this is in the correct format
+    estado: citaData.estado, // Ensure this matches the EstadoCita enum in the backend
+    medicoNombre: citaData.medicoNombre // Ensure this is the email of the doctor
+  };
+
+  if (!cita.id || !cita.fecha || !cita.estado || !cita.medicoNombre) {
+    console.error('Datos incompletos para actualizar la cita:', cita);
+    return;
+  }
+
+  if (isPlatformBrowser(this.platformId)) {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('No token found');
+      return;
+    }
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    this.http.put(`${baseUrl}/citas/${cita.id}`, cita, { headers }).subscribe(response => {
+      console.log('Cita actualizada:', response);
+      this.notifications.push('Cita actualizada');
+      this.getCitas(); // Actualizar la lista de citas después de actualizar una cita
+    }, error => {
+      console.error('Error al actualizar la cita:', error);
+      if (error.status === 0) {
+        console.error('El backend no está activado.');
+      } else if (error.status === 400) {
+        console.error('Datos inválidos:', error.error);
+      }
+    });
+  }
+}
+
+// ...existing code...
+
+  eliminarCita(id: number) {
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      this.http.delete(`${baseUrl}/citas/${id}`, { headers }).subscribe(response => {
+        console.log('Cita eliminada:', response);
+        this.notifications.push('Cita eliminada');
+        this.getCitas(); // Actualizar la lista de citas después de eliminar una cita
+      }, error => {
+        console.error('Error al eliminar la cita:', error);
+        if (error.status === 0) {
+          console.error('El backend no está activado.');
+        }
+      });
+    }
+  }
   // ...existing code...
 getUsuarioData() {
   const token = localStorage.getItem('token');
