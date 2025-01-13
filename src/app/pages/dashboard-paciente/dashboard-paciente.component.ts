@@ -65,7 +65,7 @@ export class DashboardPacienteComponent {
   citas: any[] = [];
   horarios: any[] = [];
   notifications: string[] = [];
-  displayedColumns: string[] = ['fecha', 'hora', 'estado', 'medicoNombre'];
+  displayedColumns: string[] = ['id', 'fecha', 'hora', 'estado', 'medicoNombre'];
   displayedColumnsHorarios: string[] = ['medicoNombre', 'diaSemana', 'horaInicio', 'horaFin'];
   editMode: boolean = false;
 
