@@ -198,48 +198,33 @@ onSubmit() {
 // ...existing code...
 
 onModificarSubmit() {
-  const citaData = this.modificarCitaForm.value;
-  const fechaHora = new Date(citaData.fecha);
-  const [hours, minutes] = citaData.hora.split(':');
-  fechaHora.setHours(hours, minutes);
+  if (this.modificarCitaForm.valid) {
+    const formValue = this.modificarCitaForm.value;
+    const fecha = new Date(formValue.fecha);
+    const [hours, minutes] = formValue.hora.split(':');
+    fecha.setHours(hours, minutes, 0, 0); // Asegúrate de establecer los segundos y milisegundos a 0
 
-  const cita = {
-    id: citaData.id,
-    fecha: fechaHora.toISOString(), // Ensure this is in the correct format
-    estado: citaData.estado, // Ensure this matches the EstadoCita enum in the backend
-    medicoNombre: citaData.medicoNombre // Ensure this is the email of the doctor
-  };
+    const citaModificada = {
+      ...formValue,
+      fecha: fecha.toISOString()
+    };
 
-  if (!cita.id || !cita.fecha || !cita.estado || !cita.medicoNombre) {
-    console.error('Datos incompletos para actualizar la cita:', cita);
-    return;
-  }
-
-  if (isPlatformBrowser(this.platformId)) {
     const token = localStorage.getItem('token');
-    if (!token) {
-      console.error('No token found');
-      return;
-    }
-
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    this.http.put(`${baseUrl}/citas/${cita.id}`, cita, { headers }).subscribe(response => {
-      console.log('Cita actualizada:', response);
-      this.notifications.push('Cita actualizada');
-      this.getCitas(); // Actualizar la lista de citas después de actualizar una cita
+    this.http.put(`${baseUrl}/citas/${formValue.id}`, citaModificada, { headers }).subscribe(response => {
+      this.snackBar.open('Cita modificada correctamente', 'Cerrar', {
+        duration: 3000,
+      });
+      this.getCitas();
     }, error => {
-      console.error('Error al actualizar la cita:', error);
-      if (error.status === 0) {
-        console.error('El backend no está activado.');
-      } else if (error.status === 400) {
-        console.error('Datos inválidos:', error.error);
-      }
+      console.error('Error al modificar la cita:', error);
+      this.snackBar.open('Error al modificar la cita', 'Cerrar', {
+        duration: 3000,
+      });
     });
   }
 }
-
-// ...existing code...
 
   eliminarCita(id: number) {
     if (isPlatformBrowser(this.platformId)) {
