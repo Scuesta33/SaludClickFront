@@ -18,6 +18,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DatePipe } from '@angular/common';
 import baseUrl from '../../services/helper';
 
 interface Usuario {
@@ -53,7 +54,8 @@ interface Cita {
     MatCardModule,
   ],
   templateUrl: './dashboard-paciente.component.html',
-  styleUrls: ['./dashboard-paciente.component.css']
+  styleUrls: ['./dashboard-paciente.component.css'],
+  providers: [DatePipe]
 })
 export class DashboardPacienteComponent {
   @ViewChild('sidenav') sidenav!: MatSidenav;
@@ -75,7 +77,8 @@ constructor(
   private router: Router,
   private fb: FormBuilder,
   private http: HttpClient,
-  private snackBar: MatSnackBar
+  private snackBar: MatSnackBar,
+  private datePipe: DatePipe
 ) {
   this.isScreenSmall = isPlatformBrowser(this.platformId) ? window.innerWidth < 768 : false;
   this.citaForm = this.fb.group({
@@ -103,6 +106,7 @@ constructor(
   if (isPlatformBrowser(this.platformId)) {
     this.getUsuarioData();
     this.getCitas();
+    this.getHorariosDisponibles();
   }
 }
 // ...existing code...
@@ -124,7 +128,35 @@ constructor(
     }
   }
   // ...existing code...
-
+  
+  
+  // ...existing code...
+ 
+  getHorariosDisponibles() {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    
+    // Llamada a la API para obtener todas las disponibilidades
+    this.http.get<any[]>(`${baseUrl}/disponibilidad/todas`, { headers }).subscribe(
+      (data) => {
+        console.log('Datos de horarios recibidos:', data); // Verifica los datos de la API
+        // Mapeamos los horarios y formateamos las horas correctamente
+        this.horarios = data.map((horario) => ({
+          ...horario,
+          // Asegúrate de acceder correctamente al nombre del medico desde `medico.nombre`
+          medicoNombre: horario.medico?.nombre || 'Sin médico asignado', // Usamos `medico?.nombre` para evitar errores si no existe
+          horaInicio: this.datePipe.transform(new Date(`1970-01-01T${horario.horaInicio}`), 'HH:mm'),
+          horaFin: this.datePipe.transform(new Date(`1970-01-01T${horario.horaFin}`), 'HH:mm')
+        }));
+      },
+      (error) => {
+        console.error('Error al obtener los horarios:', error);
+      }
+    );
+  }
+  
+// ...existing code...
+  
 onSubmit() {
   const citaData = this.citaForm.value;
   const fechaHora = new Date(citaData.fecha);
