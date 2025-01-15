@@ -207,7 +207,7 @@ export class DashboardMedicoComponent {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-      this.http.get(`${baseUrl}/consultas`, { headers }).subscribe((data: any) => {
+      this.http.get(`${baseUrl}/citas/consultas`, { headers }).subscribe((data: any) => {
         this.consultas = data;
       }, error => {
         console.error('Error al obtener las consultas:', error);
