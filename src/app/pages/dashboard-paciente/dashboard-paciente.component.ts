@@ -239,6 +239,7 @@ onModificarSubmit() {
     const citaModificada = {
       id: formValue.id,
       fecha: fecha.toISOString(),
+      estado: formValue.estado || 'PENDIENTE',
       medicoNombre: formValue.medicoNombre // El paciente no puede modificar el estado
     };
 
