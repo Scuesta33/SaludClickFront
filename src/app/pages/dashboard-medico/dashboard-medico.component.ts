@@ -61,7 +61,7 @@ export class DashboardMedicoComponent {
   citas: any[] = [];
   consultas: any[] = [];
   notifications: string[] = [];
-  displayedColumnsConsultas: string[] = ['fecha', 'hora', 'estado', 'pacienteNombre'];
+  displayedColumnsConsultas: string[] = ['id', 'fecha', 'hora', 'estado', 'pacienteNombre'];
   editMode: boolean = false;
 
   constructor(
