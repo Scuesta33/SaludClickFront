@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -19,6 +19,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import baseUrl from '../../services/helper';
+
 
 interface Usuario {
   idUsuario: string;
@@ -78,11 +79,10 @@ export class DashboardMedicoComponent {
       horaFin: ['']
     });
     this.modificarCitaForm = this.fb.group({
-      id: [''],
-      fecha: [''],
-      hora: [''],
-      estado: [''],
-      medicoNombre: ['']
+      id: ['', Validators.required],
+      fecha: ['', Validators.required],
+      hora: ['', Validators.required],
+      estado: ['', Validators.required]
     });
     this.usuarioForm = this.fb.group({
       id: [''],
@@ -147,45 +147,36 @@ export class DashboardMedicoComponent {
   }
 
   onModificarSubmit() {
-    const citaData = this.modificarCitaForm.value;
-    const fechaHora = new Date(citaData.fecha);
-    const [hours, minutes] = citaData.hora.split(':');
-    fechaHora.setHours(hours, minutes);
-
-    const cita = {
-      id: citaData.id,
-      fecha: fechaHora.toISOString(),
-      estado: citaData.estado,
-      medicoNombre: citaData.medicoNombre
-    };
-
-    if (isPlatformBrowser(this.platformId)) {
-      const token = localStorage.getItem('token');
-      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
-      this.http.put(`${baseUrl}/citas/${cita.id}`, cita, { headers }).subscribe(response => {
-        console.log('Cita modificada:', response);
-        this.notifications.push('Cita modificada');
-        if (cita.estado === 'CANCELADA') {
-          this.http.delete(`${baseUrl}/citas/${cita.id}`, { headers }).subscribe(deleteResponse => {
-            console.log('Cita eliminada:', deleteResponse);
-            this.notifications.push('Cita eliminada');
-            this.getCitas();
-          }, deleteError => {
-            console.error('Error al eliminar la cita:', deleteError);
-          });
-        } else {
-          this.getCitas(); // Actualizar la lista de citas después de modificar una cita
-        }
-      }, error => {
-        console.error('Error al modificar la cita:', error);
-        if (error.status === 0) {
-          console.error('El backend no está activado.');
-        }
-      });
+    if (this.modificarCitaForm.valid) {
+      const citaData = this.modificarCitaForm.value;
+      const fechaHora = new Date(citaData.fecha);
+      const [hours, minutes] = citaData.hora.split(':');
+      fechaHora.setHours(hours, minutes);
+  
+      const cita = {
+        id: citaData.id,
+        fecha: fechaHora.toISOString(),
+        estado: citaData.estado // El médico puede modificar el estado
+      };
+  
+      if (isPlatformBrowser(this.platformId)) {
+        const token = localStorage.getItem('token');
+        const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  
+        this.http.put(`${baseUrl}/citas/${cita.id}`, cita, { headers }).subscribe(response => {
+          console.log('Cita modificada:', response);
+          this.notifications.push('Cita modificada');
+          this.getCitas();
+          this.getConsultas();
+        }, error => {
+          console.error('Error al modificar la cita:', error);
+          if (error.status === 0) {
+            console.error('El backend no está activado.');
+          }
+        });
+      }
     }
   }
-
   getCitas() {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');

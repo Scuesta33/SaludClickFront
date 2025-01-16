@@ -237,8 +237,9 @@ onModificarSubmit() {
     fecha.setHours(hours, minutes, 0, 0); // Asegúrate de establecer los segundos y milisegundos a 0
 
     const citaModificada = {
-      ...formValue,
-      fecha: fecha.toISOString()
+      id: formValue.id,
+      fecha: fecha.toISOString(),
+      medicoNombre: formValue.medicoNombre // El paciente no puede modificar el estado
     };
 
     const token = localStorage.getItem('token');
