@@ -208,7 +208,13 @@ export class DashboardMedicoComponent {
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
       this.http.get(`${baseUrl}/citas/consultas`, { headers }).subscribe((data: any) => {
-        this.consultas = data;
+        this.consultas = data.map((consulta: any) => {
+          return {
+            ...consulta,
+            hora: new Date(consulta.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            pacienteNombre: consulta.pacienteNombre || 'Desconocido'
+          };
+        });
       }, error => {
         console.error('Error al obtener las consultas:', error);
         if (error.status === 0) {
