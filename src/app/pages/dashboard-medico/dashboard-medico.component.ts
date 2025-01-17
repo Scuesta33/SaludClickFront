@@ -61,6 +61,8 @@ export class DashboardMedicoComponent {
   diasSemana: string[] = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
   citas: any[] = [];
   consultas: any[] = [];
+  disponibilidades: any[] = [];
+  displayedColumnsDisponibilidades: string[] = ['diaSemana', 'horaInicio', 'horaFin', 'acciones'];
   notifications: string[] = [];
   displayedColumnsConsultas: string[] = ['id', 'fecha', 'hora', 'estado', 'pacienteNombre', 'acciones'];
   editMode: boolean = false;
@@ -97,6 +99,7 @@ export class DashboardMedicoComponent {
       this.getUsuarioData();
       this.getCitas();
       this.getConsultas();
+      this.getDisponibilidades();
     }
   }
 
@@ -145,6 +148,49 @@ export class DashboardMedicoComponent {
       });
     }
   }
+  getDisponibilidades() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      this.snackBar.open('No se encontró el token de autenticación', 'Cerrar', {
+        duration: 3000,
+      });
+      return;
+    }
+  
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    
+    this.http.get<any[]>(`${baseUrl}/disponibilidad/medico`, { headers }).subscribe(
+      (data) => {
+        this.disponibilidades = data;
+      },
+      (error) => {
+        console.error('Error al obtener las disponibilidades:', error);
+        if (error.status === 403) {
+          this.snackBar.open('No tienes permiso para realizar esta acción.', 'Cerrar', {
+            duration: 3000,
+          });
+        }
+      }
+    );
+  }
+
+  eliminarDisponibilidad(id: number) {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    this.http.delete(`${baseUrl}/disponibilidad/${id}`, { headers }).subscribe(
+      (response) => {
+        console.log('Disponibilidad eliminada:', response);
+        this.snackBar.open('Disponibilidad eliminada', 'Cerrar', {
+          duration: 3000,
+        });
+        this.getDisponibilidades(); // Actualizar la lista de disponibilidades después de eliminar una
+      },
+      (error) => {
+        console.error('Error al eliminar la disponibilidad:', error);
+      }
+    );
+  }
+
 
   onModificarSubmit() {
     if (this.modificarCitaForm.valid) {
