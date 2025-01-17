@@ -62,7 +62,7 @@ export class DashboardMedicoComponent {
   citas: any[] = [];
   consultas: any[] = [];
   notifications: string[] = [];
-  displayedColumnsConsultas: string[] = ['id', 'fecha', 'hora', 'estado', 'pacienteNombre'];
+  displayedColumnsConsultas: string[] = ['id', 'fecha', 'hora', 'estado', 'pacienteNombre', 'acciones'];
   editMode: boolean = false;
 
   constructor(
@@ -176,6 +176,34 @@ export class DashboardMedicoComponent {
         });
       }
     }
+  }
+  aceptarCita(id: string) {
+    this.actualizarEstadoCita(id, 'ACEPTADA');
+  }
+
+  rechazarCita(id: string) {
+    this.actualizarEstadoCita(id, 'RECHAZADA');
+  }
+  private actualizarEstadoCita(id: string, estado: string) {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    const url = `${baseUrl}/citas/${id}`;
+    const body = { estado };
+  
+    this.http.put(url, body, { headers }).subscribe(
+      response => {
+        console.log(`Cita ${estado.toLowerCase()} correctamente:`, response);
+        this.notifications.push(`Cita ${estado.toLowerCase()}`);
+        this.getCitas();
+        this.getConsultas();
+      },
+      error => {
+        console.error(`Error al ${estado.toLowerCase()} la cita:`, error);
+        if (error.status === 0) {
+          console.error('El backend no está activado.');
+        }
+      }
+    );
   }
   getCitas() {
     if (isPlatformBrowser(this.platformId)) {
