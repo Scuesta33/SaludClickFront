@@ -176,10 +176,18 @@ export class DashboardMedicoComponent {
     );
   }
 
-  eliminarDisponibilidad(id: number) {
+  eliminarDisponibilidad(idDisponibilidad: number): void {
+    if (idDisponibilidad === undefined || idDisponibilidad === null) {
+      console.error('ID de disponibilidad no válido:', idDisponibilidad);
+      this.snackBar.open('ID de disponibilidad no válido', 'Cerrar', {
+        duration: 3000,
+      });
+      return;
+    }
+  
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    this.http.delete(`${baseUrl}/disponibilidad/${id}`, { headers }).subscribe(
+    this.http.delete(`${baseUrl}/disponibilidad/${idDisponibilidad}`, { headers }).subscribe(
       (response) => {
         console.log('Disponibilidad eliminada:', response);
         this.snackBar.open('Disponibilidad eliminada', 'Cerrar', {
@@ -189,6 +197,15 @@ export class DashboardMedicoComponent {
       },
       (error) => {
         console.error('Error al eliminar la disponibilidad:', error);
+        if (error.status === 403) {
+          this.snackBar.open('No tienes permiso para realizar esta acción.', 'Cerrar', {
+            duration: 3000,
+          });
+        } else {
+          this.snackBar.open('Error al eliminar la disponibilidad', 'Cerrar', {
+            duration: 3000,
+          });
+        }
       }
     );
   }
