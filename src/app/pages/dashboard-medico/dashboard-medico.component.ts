@@ -19,6 +19,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import baseUrl from '../../services/helper';
+import { MatButtonModule } from '@angular/material/button';
 
 
 interface Usuario {
@@ -46,7 +47,8 @@ interface Usuario {
     MatDatepickerModule,
     MatNativeDateModule,
     MatCardModule,
-    MatTableModule
+    MatTableModule,
+    MatButtonModule
   ],
   templateUrl: './dashboard-medico.component.html',
   styleUrls: ['./dashboard-medico.component.css']
