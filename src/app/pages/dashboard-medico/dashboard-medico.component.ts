@@ -99,7 +99,7 @@ export class DashboardMedicoComponent {
       rol: ['']
     });
     this.notificacionForm = this.fb.group({
-      tipoNotificacion: ['', Validators.required],
+      asunto: ['', Validators.required],
       mensaje: ['', Validators.required],
       destinatarioNombre: ['', Validators.required]
     });
@@ -163,7 +163,7 @@ export class DashboardMedicoComponent {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     const params = {
-      tipoNotificacion: notificacionData.tipoNotificacion,
+      asunto: notificacionData.asunto,
       estado: 'PENDIENTE', // Estado predeterminado
       mensaje: notificacionData.mensaje,
       destinatarioNombre: notificacionData.destinatarioNombre

@@ -54,8 +54,8 @@
         <h2>Enviar Notificación</h2>
         <form [formGroup]="notificacionForm" (ngSubmit)="enviarNotificacion()">
           <mat-form-field>
-            <mat-label>Tipo de Notificación</mat-label>
-            <input matInput formControlName="tipoNotificacion">
+            <mat-label>Asunto</mat-label>
+            <input matInput formControlName="asunto">
           </mat-form-field>
           <mat-form-field>
             <mat-label>Nombre del Destinatario</mat-label>
