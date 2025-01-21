@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -70,6 +70,8 @@ export class DashboardPacienteComponent {
   displayedColumns: string[] = ['id', 'fecha', 'hora', 'estado', 'medicoNombre'];
   displayedColumnsHorarios: string[] = ['medicoNombre', 'diaSemana', 'horaInicio', 'horaFin'];
   editMode: boolean = false;
+  notificacionForm: FormGroup;
+
 
   // ...existing code...
 constructor(
@@ -95,18 +97,24 @@ constructor(
     medicoNombre: ['']
   });
   this.usuarioForm = this.fb.group({
-    id: [''], // Asegúrate de que el control 'id' esté definido aquí
+    id: [''], 
     nombre: [''],
     email: [''],
     telefono: [''],
     contrasena: [''],
     rol: ['']
   });
+  this.notificacionForm = this.fb.group({
+    tipoNotificacion: ['', Validators.required],
+    mensaje: ['', Validators.required],
+    destinatarioNombre: ['', Validators.required]
+  });
 
   if (isPlatformBrowser(this.platformId)) {
     this.getUsuarioData();
     this.getCitas();
     this.getHorariosDisponibles();
+    this.getNotificaciones();
   }
 }
 // ...existing code...
@@ -201,8 +209,38 @@ onSubmit() {
   }
 }
 
-// ...existing code...
- 
+getNotificaciones() {
+  const token = localStorage.getItem('token');
+  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  this.http.get<any[]>(`${baseUrl}/notificaciones/usuario`, { headers }).subscribe(
+    (data) => {
+      this.notifications = data;
+    },
+    (error) => {
+      console.error('Error al obtener notificaciones:', error);
+    }
+  );
+}
+enviarNotificacion() {
+  const notificacionData = this.notificacionForm.value;
+  const token = localStorage.getItem('token');
+  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  const params = {
+    tipoNotificacion: notificacionData.tipoNotificacion,
+    estado: 'PENDIENTE', // Estado predeterminado
+    mensaje: notificacionData.mensaje,
+    destinatarioNombre: notificacionData.destinatarioNombre
+  };
+  this.http.post(`${baseUrl}/notificaciones/enviar`, null, { headers, params }).subscribe(
+    (response) => {
+      console.log('Notificación enviada:', response);
+      this.notifications.push(JSON.stringify(response));
+    },
+    (error) => {
+      console.error('Error al enviar la notificación:', error);
+    }
+  );
+}
  
 
   getCitas() {

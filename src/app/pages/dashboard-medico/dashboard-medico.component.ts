@@ -68,6 +68,8 @@ export class DashboardMedicoComponent {
   notifications: string[] = [];
   displayedColumnsConsultas: string[] = ['id', 'fecha', 'hora', 'estado', 'pacienteNombre', 'acciones'];
   editMode: boolean = false;
+  notificacionForm: FormGroup;
+
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -96,12 +98,18 @@ export class DashboardMedicoComponent {
       contrasena: [''],
       rol: ['']
     });
+    this.notificacionForm = this.fb.group({
+      tipoNotificacion: ['', Validators.required],
+      mensaje: ['', Validators.required],
+      destinatarioNombre: ['', Validators.required]
+    });
 
     if (isPlatformBrowser(this.platformId)) {
       this.getUsuarioData();
       this.getCitas();
       this.getConsultas();
       this.getDisponibilidades();
+      this.getNotificaciones();
     }
   }
 
@@ -150,6 +158,40 @@ export class DashboardMedicoComponent {
       });
     }
   }
+  enviarNotificacion() {
+    const notificacionData = this.notificacionForm.value;
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    const params = {
+      tipoNotificacion: notificacionData.tipoNotificacion,
+      estado: 'PENDIENTE', // Estado predeterminado
+      mensaje: notificacionData.mensaje,
+      destinatarioNombre: notificacionData.destinatarioNombre
+    };
+    this.http.post(`${baseUrl}/notificaciones/enviar`, null, { headers, params }).subscribe(
+      (response) => {
+        console.log('Notificación enviada:', response);
+        this.notifications.push(JSON.stringify(response));
+      },
+      (error) => {
+        console.error('Error al enviar la notificación:', error);
+      }
+    );
+  }
+
+  getNotificaciones() {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    this.http.get<any[]>(`${baseUrl}/notificaciones/destinatario`, { headers }).subscribe(
+      (data) => {
+        this.notifications = data;
+      },
+      (error) => {
+        console.error('Error al obtener notificaciones:', error);
+      }
+    );
+  }
+
   getDisponibilidades() {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -193,7 +235,7 @@ export class DashboardMedicoComponent {
         this.snackBar.open('Disponibilidad eliminada', 'Cerrar', {
           duration: 3000,
         });
-        this.getDisponibilidades(); // Actualizar la lista de disponibilidades después de eliminar una
+        this.getDisponibilidades(); 
       },
       (error) => {
         console.error('Error al eliminar la disponibilidad:', error);
@@ -221,7 +263,7 @@ export class DashboardMedicoComponent {
       const cita = {
         id: citaData.id,
         fecha: fechaHora.toISOString(),
-        estado: citaData.estado // El médico puede modificar el estado
+        estado: citaData.estado 
       };
   
       if (isPlatformBrowser(this.platformId)) {

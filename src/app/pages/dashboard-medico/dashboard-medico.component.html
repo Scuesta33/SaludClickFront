@@ -18,6 +18,10 @@
         <mat-icon matListIcon>visibility</mat-icon>
         <span matLine>Visualizar consultas</span>
       </mat-list-item>
+      <mat-list-item (click)="setActiveSection('enviar-notificacion'); closeSidenavIfSmall()">
+        <mat-icon matListIcon>notifications</mat-icon>
+        <span matLine>Enviar Notificación</span>
+      </mat-list-item>
       <mat-list-item (click)="setActiveSection('datos-usuario'); closeSidenavIfSmall()">
         <mat-icon matListIcon>person</mat-icon>
         <span matLine>Datos del usuario</span>
@@ -42,6 +46,24 @@
       </button>
     </mat-toolbar>
     <div class="content">
+      <div *ngIf="activeSection === 'enviar-notificacion'">
+        <h2>Enviar Notificación</h2>
+        <form [formGroup]="notificacionForm" (ngSubmit)="enviarNotificacion()">
+          <mat-form-field>
+            <mat-label>Tipo de Notificación</mat-label>
+            <input matInput formControlName="tipoNotificacion">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Nombre del Destinatario</mat-label>
+            <input matInput formControlName="destinatarioNombre">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Mensaje</mat-label>
+            <textarea matInput formControlName="mensaje"></textarea>
+          </mat-form-field>
+          <button mat-raised-button color="primary" type="submit">Enviar</button>
+        </form>
+      </div>
       <div *ngIf="activeSection === 'crear-disponibilidades'">
         <h2>Crear disponibilidades</h2>
         <form [formGroup]="disponibilidadForm" (ngSubmit)="onSubmitDisponibilidad()">
