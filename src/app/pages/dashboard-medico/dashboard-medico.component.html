@@ -22,6 +22,10 @@
         <mat-icon matListIcon>notifications</mat-icon>
         <span matLine>Enviar Notificación</span>
       </mat-list-item>
+      <mat-list-item (click)="setActiveSection('visualizar-notificaciones'); closeSidenavIfSmall()">
+        <mat-icon matListIcon>notifications_active</mat-icon>
+        <span matLine>Visualizar Notificaciones</span>
+      </mat-list-item>
       <mat-list-item (click)="setActiveSection('datos-usuario'); closeSidenavIfSmall()">
         <mat-icon matListIcon>person</mat-icon>
         <span matLine>Datos del usuario</span>
@@ -63,6 +67,15 @@
           </mat-form-field>
           <button mat-raised-button color="primary" type="submit">Enviar</button>
         </form>
+      </div>
+      <div *ngIf="activeSection === 'visualizar-notificaciones'">
+        <h2>Notificaciones</h2>
+        <mat-list>
+          <mat-list-item *ngFor="let notification of notifications">
+            <mat-icon matListIcon>notification_important</mat-icon>
+            <h4 matLine>{{ notification }}</h4>
+          </mat-list-item>
+        </mat-list>
       </div>
       <div *ngIf="activeSection === 'crear-disponibilidades'">
         <h2>Crear disponibilidades</h2>
