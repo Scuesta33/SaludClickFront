@@ -171,26 +171,33 @@ export class DashboardMedicoComponent {
     this.http.post(`${baseUrl}/notificaciones/enviar`, null, { headers, params }).subscribe(
       (response) => {
         console.log('Notificación enviada:', response);
-        this.notifications.push(JSON.stringify(response));
+        this.snackBar.open('Notificación enviada', 'Cerrar', {
+          duration: 3000,
+        });
       },
       (error) => {
         console.error('Error al enviar la notificación:', error);
       }
     );
   }
-
   getNotificaciones() {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    this.http.get<any[]>(`${baseUrl}/notificaciones/destinatario`, { headers }).subscribe(
+  
+    this.http.get<any[]>(`${baseUrl}/notificaciones/usuario`, { headers }).subscribe(
       (data) => {
-        this.notifications = data;
+        // Si recibimos al menos una notificación, mostramos el mensaje genérico
+        if (data && data.length > 0) {
+          this.notifications.push('Has recibido una nueva notificación');
+          this.showNotifications(); // Mostrar la notificación una vez
+        }
       },
       (error) => {
         console.error('Error al obtener notificaciones:', error);
       }
     );
   }
+
 
   getDisponibilidades() {
     const token = localStorage.getItem('token');
@@ -421,13 +428,13 @@ export class DashboardMedicoComponent {
 
   showNotifications() {
     if (this.notifications.length > 0) {
-      this.notifications.forEach(notification => {
-        this.snackBar.open(notification, 'Cerrar', {
-          duration: 3000,
-        });
+      // Mostrar la notificación de que se ha recibido una nueva notificación
+      this.snackBar.open(this.notifications[0], 'Cerrar', {
+        duration: 3000, // Duración de 3 segundos
       });
-      this.notifications = [];
+      this.notifications = []; // Limpiar las notificaciones después de mostrarlas
     } else {
+      // Si no hay notificaciones, se muestra un mensaje genérico
       this.snackBar.open('No hay notificaciones nuevas', 'Cerrar', {
         duration: 3000,
       });
