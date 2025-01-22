@@ -21,6 +21,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DatePipe } from '@angular/common';
 import baseUrl from '../../services/helper';
 
+interface Notification {
+  idNotificacion: number;
+  asunto: string;
+  mensaje: string;
+  fechaEnvio: Date;
+  usuario: { nombre: string };
+}
 interface Usuario {
   idUsuario: string;
   nombre: string;
@@ -67,8 +74,10 @@ export class DashboardPacienteComponent {
   citas: any[] = [];
   horarios: any[] = [];
   notifications: string[] = [];
+  notificationsNew: Notification[] = [];
   displayedColumns: string[] = ['id', 'fecha', 'hora', 'estado', 'medicoNombre'];
   displayedColumnsHorarios: string[] = ['medicoNombre', 'diaSemana', 'horaInicio', 'horaFin'];
+  displayedColumnsNotifications: string[] = ['asunto', 'mensaje', 'remitente', 'fecha', 'acciones'];
   editMode: boolean = false;
   notificacionForm: FormGroup;
 
@@ -209,13 +218,12 @@ onSubmit() {
   }
 }
 
-getNotificaciones() {
+checkForNewNotifications() {
   const token = localStorage.getItem('token');
   const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-  this.http.get<any[]>(`${baseUrl}/notificaciones/usuario`, { headers }).subscribe(
+  this.http.get<any[]>(`${baseUrl}/notificaciones/destinatario`, { headers }).subscribe(
     (data) => {
-      // Si recibimos al menos una notificación, mostramos el mensaje genérico
       if (data && data.length > 0) {
         this.notifications.push('Has recibido una nueva notificación');
         this.showNotifications(); // Mostrar la notificación una vez
@@ -223,6 +231,36 @@ getNotificaciones() {
     },
     (error) => {
       console.error('Error al obtener notificaciones:', error);
+    }
+  );
+}
+
+getNotificaciones() {
+  const token = localStorage.getItem('token');
+  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+  this.http.get<Notification[]>(`${baseUrl}/notificaciones/destinatario`, { headers }).subscribe(
+    (data) => {
+      this.notificationsNew = data;
+    },
+    (error) => {
+      console.error('Error al obtener notificaciones:', error);
+    }
+  );
+}
+deleteNotification(id: number) {
+  const token = localStorage.getItem('token');
+  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+  this.http.delete(`${baseUrl}/notificaciones/eliminar/${id}`, { headers }).subscribe(
+    () => {
+      this.notificationsNew = this.notificationsNew.filter(notification => notification.idNotificacion !== id);
+      this.snackBar.open('Notificación eliminada', 'Cerrar', {
+        duration: 3000,
+      });
+    },
+    (error) => {
+      console.error('Error al eliminar la notificación:', error);
     }
   );
 }
