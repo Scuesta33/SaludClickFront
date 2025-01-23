@@ -9,6 +9,7 @@ import baserUrl from './helper';
 export class AuthService {
   constructor(private httpClient: HttpClient) {}
 
+  
   login(credentials: any): Observable<any> {
     return this.httpClient.post(`${baserUrl}/auth/login`, credentials);
   }
