@@ -21,6 +21,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DatePipe } from '@angular/common';
 import baseUrl from '../../services/helper';
 
+// interface para notificaciones
 interface Notification {
   idNotificacion: number;
   asunto: string;
@@ -28,6 +29,7 @@ interface Notification {
   fechaEnvio: Date;
   usuario: { nombre: string };
 }
+// interface para usuario
 interface Usuario {
   idUsuario: string;
   nombre: string;
@@ -35,6 +37,8 @@ interface Usuario {
   telefono: string;
   rol: string;
 }
+
+// interface para citas
 interface Cita {
   id: number;
   fecha: string;
@@ -43,7 +47,7 @@ interface Cita {
 }
 @Component({
   selector: 'app-dashboard-paciente',
-  standalone: true,
+  standalone: true, //indica que es un componente independiente
   imports: [
     MatSidenavModule,
     MatListModule,
@@ -66,9 +70,9 @@ interface Cita {
 })
 export class DashboardPacienteComponent {
   @ViewChild('sidenav') sidenav!: MatSidenav;
-  activeSection: string = 'horarios';
-  isScreenSmall: boolean;
-  citaForm: FormGroup;
+  activeSection: string = 'horarios';//sección activa por defecto
+  isScreenSmall: boolean;//indica si la pantalla es pequeña
+  citaForm: FormGroup;         //formularios para crear citas, modificar citas, datos del usuario  
   modificarCitaForm: FormGroup;
   usuarioForm: FormGroup;
   citas: any[] = [];
@@ -126,7 +130,7 @@ constructor(
     this.getNotificaciones();
   }
 }
-// ...existing code...
+
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
@@ -144,10 +148,8 @@ constructor(
       this.sidenav.close();
     }
   }
-  // ...existing code...
   
   
-  // ...existing code...
  
   getHorariosDisponibles() {
     const token = localStorage.getItem('token');
@@ -310,7 +312,6 @@ enviarNotificacion() {
     }
   }
   
-// ...existing code...
 
 onModificarSubmit() {
   if (this.modificarCitaForm.valid) {
@@ -360,7 +361,6 @@ onModificarSubmit() {
       });
     }
   }
-  // ...existing code...
 getUsuarioData() {
   const token = localStorage.getItem('token');
   const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
@@ -378,7 +378,6 @@ getUsuarioData() {
     console.error('Error al obtener los datos del usuario:', error);
   });
 }
-// ...existing code...
 onUsuarioSubmit() {
   const usuarioData = { ...this.usuarioForm.value };
   delete usuarioData.id; // Excluir el campo 'id'
