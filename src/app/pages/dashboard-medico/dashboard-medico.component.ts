@@ -20,7 +20,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import baseUrl from '../../services/helper';
 import { MatButtonModule } from '@angular/material/button';
-
+//interface para notificaciones
 interface Notification {
   idNotificacion: number;
   asunto: string;
@@ -28,7 +28,7 @@ interface Notification {
   fechaEnvio: Date;
   usuario: { nombre: string };
 }
-
+//interface para usuario
 interface Usuario {
   idUsuario: string;
   nombre: string;
@@ -39,7 +39,7 @@ interface Usuario {
 
 @Component({
   selector: 'app-dashboard-medico',
-  standalone: true,
+  standalone: true, // indica que es un componente independiente
   imports: [
     MatSidenavModule,
     MatListModule,
@@ -62,22 +62,22 @@ interface Usuario {
 })
 export class DashboardMedicoComponent {
   @ViewChild('sidenav') sidenav!: MatSidenav;
-  activeSection: string = 'crear-disponibilidades';
-  isScreenSmall: boolean;
+  activeSection: string = 'crear-disponibilidades';// sección activa por defecto
+  isScreenSmall: boolean;//indica si la pantalla es pequeña
   disponibilidadForm: FormGroup;
   modificarCitaForm: FormGroup;
   usuarioForm: FormGroup;
-  diasSemana: string[] = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+  diasSemana: string[] = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']; // Días de la semana
   citas: any[] = [];
   consultas: any[] = [];
   disponibilidades: any[] = [];
-  displayedColumnsDisponibilidades: string[] = ['diaSemana', 'horaInicio', 'horaFin', 'acciones'];
-  displayedColumnsNotifications: string[] = ['asunto', 'mensaje', 'remitente', 'fecha', 'acciones'];
-  notifications: string[] = [];
-  notificationsNew: Notification[] = [];
-  displayedColumnsConsultas: string[] = ['id', 'fecha', 'hora', 'estado', 'pacienteNombre', 'acciones'];
-  editMode: boolean = false;
-  notificacionForm: FormGroup;
+  displayedColumnsDisponibilidades: string[] = ['diaSemana', 'horaInicio', 'horaFin', 'acciones'];//para visualizar disponinilidades
+  displayedColumnsNotifications: string[] = ['asunto', 'mensaje', 'remitente', 'fecha', 'acciones'];//para visualizar notificaciones
+  notifications: string[] = [];// lista de notificaciones
+  notificationsNew: Notification[] = [];// lista de notificaciones nuevas
+  displayedColumnsConsultas: string[] = ['id', 'fecha', 'hora', 'estado', 'pacienteNombre', 'acciones'];//para visualizar consultas
+  editMode: boolean = false; // indica si se está editando el usuario
+  notificacionForm: FormGroup; // Formulario para enviar notificaciones
 
 
   constructor(
@@ -113,7 +113,7 @@ export class DashboardMedicoComponent {
       destinatarioNombre: ['', Validators.required]
     });
 
-    if (isPlatformBrowser(this.platformId)) {
+    if (isPlatformBrowser(this.platformId)) {//obtiene datos del usuario, citas, consultas, disponibilidades y notificaciones
       this.getUsuarioData();
       this.getCitas();
       this.getConsultas();
@@ -121,36 +121,36 @@ export class DashboardMedicoComponent {
       this.getNotificaciones();
     }
   }
-
+//método para ajustar la pantalla cuando cambia el tamaño
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     if (isPlatformBrowser(this.platformId)) {
       this.isScreenSmall = event.target.innerWidth < 768;
     }
   }
-
+//para cambiar la sección activa
   setActiveSection(section: string) {
     this.activeSection = section;
   }
-
+//para cerrar el sidenav si la pantalla es pequeña
   closeSidenavIfSmall() {
     if (this.isScreenSmall && this.sidenav) {
       this.sidenav.close();
     }
   }
-
+  //enviar el formulario de disponibilidad
   onSubmitDisponibilidad() {
     const disponibilidadData = [this.disponibilidadForm.value]; // Enviar como lista
     if (isPlatformBrowser(this.platformId)) {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token');//obtiene el token
       if (!token) {
         this.snackBar.open('No se encontró el token de autenticación', 'Cerrar', {
           duration: 3000,
         });
         return;
       }
-      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`); //configura las cabeceras
+    //realiza la petición post y maneja la respuesta
       this.http.post(`${baseUrl}/disponibilidad/crear`, disponibilidadData, { headers }).subscribe(response => {
         console.log('Disponibilidad creada:', response);
         this.notifications.push('Disponibilidad creada');
@@ -167,6 +167,7 @@ export class DashboardMedicoComponent {
       });
     }
   }
+  // envía una notificación
   enviarNotificacion() {
     const notificacionData = this.notificacionForm.value;
     const token = localStorage.getItem('token');
@@ -189,6 +190,7 @@ export class DashboardMedicoComponent {
       }
     );
   }
+  //verifica si hay nuevas notificaciones
   checkForNewNotifications() {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
@@ -197,7 +199,7 @@ export class DashboardMedicoComponent {
       (data) => {
         if (data && data.length > 0) {
           this.notifications.push('Has recibido una nueva notificación');
-          this.showNotifications(); // Mostrar la notificación una vez
+          this.showNotifications(); // Muestra la notificación una vez
         }
       },
       (error) => {
@@ -205,7 +207,7 @@ export class DashboardMedicoComponent {
       }
     );
   }
-
+//obtiene las notificaciones del backend
   getNotificaciones() {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
@@ -219,6 +221,7 @@ export class DashboardMedicoComponent {
       }
     );
   }
+  //elimina una notificación por id
   deleteNotification(id: number) {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
@@ -237,7 +240,7 @@ export class DashboardMedicoComponent {
   }
 
 
-
+//obtiene las disponibilidades del backend
   getDisponibilidades() {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -263,7 +266,7 @@ export class DashboardMedicoComponent {
       }
     );
   }
-
+//elimina una disponibilidad por id
   eliminarDisponibilidad(idDisponibilidad: number): void {
     if (idDisponibilidad === undefined || idDisponibilidad === null) {
       console.error('ID de disponibilidad no válido:', idDisponibilidad);
@@ -298,7 +301,7 @@ export class DashboardMedicoComponent {
     );
   }
 
-
+//modifica una cita existente
   onModificarSubmit() {
     if (this.modificarCitaForm.valid) {
       const citaData = this.modificarCitaForm.value;
@@ -330,13 +333,16 @@ export class DashboardMedicoComponent {
       }
     }
   }
+  //método para aceptar una cita
   aceptarCita(id: string) {
     this.actualizarEstadoCita(id, 'ACEPTADA');
   }
-
+//método para rechazar una cita
   rechazarCita(id: string) {
     this.actualizarEstadoCita(id, 'RECHAZADA');
   }
+
+  //método para actualizar el estado de una cita
   private actualizarEstadoCita(id: string, estado: string) {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
@@ -358,6 +364,7 @@ export class DashboardMedicoComponent {
       }
     );
   }
+  //obtener las citas del backend
   getCitas() {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
@@ -373,7 +380,7 @@ export class DashboardMedicoComponent {
       });
     }
   }
-
+//obtener las consultas del backend
   getConsultas() {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
@@ -395,7 +402,7 @@ export class DashboardMedicoComponent {
       });
     }
   }
-
+//obtener los datos del usuario
   getUsuarioData() {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
@@ -413,7 +420,7 @@ export class DashboardMedicoComponent {
       console.error('Error al obtener los datos del usuario:', error);
     });
   }
-
+//método para actualizar datos de usuario
   onUsuarioSubmit() {
     const usuarioData = { ...this.usuarioForm.value };
     delete usuarioData.id; // Excluir el campo 'id'
@@ -440,6 +447,7 @@ export class DashboardMedicoComponent {
       });
     }
   }
+//método para eliminar un usuario
   onEliminarUsuario() {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
@@ -464,22 +472,22 @@ export class DashboardMedicoComponent {
       }
     }
   }
-
+//método para mostrar notificaciones
   showNotifications() {
     if (this.notifications.length > 0) {
       // Mostrar la notificación de que se ha recibido una nueva notificación
       this.snackBar.open(this.notifications[0], 'Cerrar', {
-        duration: 3000, // Duración de 3 segundos
+        duration: 3000, // 3 segundos
       });
-      this.notifications = []; // Limpiar las notificaciones después de mostrarlas
+      this.notifications = []; 
     } else {
-      // Si no hay notificaciones, se muestra un mensaje genérico
+      
       this.snackBar.open('No hay notificaciones nuevas', 'Cerrar', {
         duration: 3000,
       });
     }
   }
-
+//método para cerrar sesión
   logout() {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('token');
