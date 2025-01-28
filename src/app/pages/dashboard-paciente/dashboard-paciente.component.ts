@@ -176,7 +176,7 @@ constructor(
   
 
   
-onSubmit() {
+crearCitas() {
   const citaData = this.citaForm.value;
   const fechaHora = new Date(citaData.fecha);
   const [hours, minutes] = citaData.hora.split(':');
@@ -220,7 +220,7 @@ onSubmit() {
   }
 }
 
-checkForNewNotifications() {
+revisarNuevasNotificaciones() {
   const token = localStorage.getItem('token');
   const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
@@ -228,7 +228,7 @@ checkForNewNotifications() {
     (data) => {
       if (data && data.length > 0) {
         this.notifications.push('Has recibido una nueva notificación');
-        this.showNotifications(); // Mostrar la notificación una vez
+        this.mostrarNotificaciones(); // Mostrar la notificación una vez
       }
     },
     (error) => {
@@ -250,7 +250,7 @@ getNotificaciones() {
     }
   );
 }
-deleteNotification(id: number) {
+deleteNotificacion(id: number) {
   const token = localStorage.getItem('token');
   const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
@@ -313,7 +313,7 @@ enviarNotificacion() {
   }
   
 
-onModificarSubmit() {
+modificarCita() {
   if (this.modificarCitaForm.valid) {
     const formValue = this.modificarCitaForm.value;
     const fecha = new Date(formValue.fecha);
@@ -378,7 +378,7 @@ getUsuarioData() {
     console.error('Error al obtener los datos del usuario:', error);
   });
 }
-onUsuarioSubmit() {
+actualizarUsuario() {
   const usuarioData = { ...this.usuarioForm.value };
   delete usuarioData.id; // Excluir el campo 'id'
   
@@ -407,7 +407,7 @@ onUsuarioSubmit() {
 }
   
 
-  onEliminarUsuario() {
+   deleteUsuario() {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
@@ -431,7 +431,7 @@ onUsuarioSubmit() {
       }
     }
   }
-  showNotifications() {
+  mostrarNotificaciones() {
     if (this.notifications.length > 0) {
       // Mostrar la notificación de que se ha recibido una nueva notificación
       this.snackBar.open(this.notifications[0], 'Cerrar', {
