@@ -75,8 +75,8 @@ export class DashboardPacienteComponent {
   citaForm: FormGroup;         //formularios para crear citas, modificar citas, datos del usuario  
   modificarCitaForm: FormGroup;
   usuarioForm: FormGroup;
-  citas: any[] = [];
-  horarios: any[] = [];
+  citas: any[] = [];//arreglo para citas
+  horarios: any[] = [];//arreglo para horarios
   notificacion: string[] = [];
   notificacionNueva: Notification[] = [];
   mostrarCitas: string[] = ['id', 'fecha', 'hora', 'estado', 'medicoNombre'];
