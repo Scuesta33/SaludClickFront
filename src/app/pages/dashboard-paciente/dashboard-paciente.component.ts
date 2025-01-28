@@ -77,11 +77,11 @@ export class DashboardPacienteComponent {
   usuarioForm: FormGroup;
   citas: any[] = [];
   horarios: any[] = [];
-  notifications: string[] = [];
-  notificationsNew: Notification[] = [];
-  displayedColumns: string[] = ['id', 'fecha', 'hora', 'estado', 'medicoNombre'];
-  displayedColumnsHorarios: string[] = ['medicoNombre', 'diaSemana', 'horaInicio', 'horaFin'];
-  displayedColumnsNotifications: string[] = ['asunto', 'mensaje', 'remitente', 'fecha', 'acciones'];
+  notificacion: string[] = [];
+  notificacionNueva: Notification[] = [];
+  mostrarCitas: string[] = ['id', 'fecha', 'hora', 'estado', 'medicoNombre'];
+  mostrarHorariosMedicos: string[] = ['medicoNombre', 'diaSemana', 'horaInicio', 'horaFin'];
+  columnaNotificaciones: string[] = ['asunto', 'mensaje', 'remitente', 'fecha', 'acciones'];
   editMode: boolean = false;
   notificacionForm: FormGroup;
 
@@ -204,7 +204,7 @@ crearCitas() {
 
     this.http.post(`${baseUrl}/citas/crear`, cita, { headers }).subscribe(response => {
       console.log('Cita creada:', response);
-      this.notifications.push('Cita creada');
+      this.notificacion.push('Cita creada');
       this.getCitas(); // Actualizar la lista de citas después de crear una nueva
     }, error => {
       console.error('Error al crear la cita:', error);
@@ -227,7 +227,7 @@ revisarNuevasNotificaciones() {
   this.http.get<any[]>(`${baseUrl}/notificaciones/destinatario`, { headers }).subscribe(
     (data) => {
       if (data && data.length > 0) {
-        this.notifications.push('Has recibido una nueva notificación');
+        this.notificacion.push('Has recibido una nueva notificación');
         this.mostrarNotificaciones(); // Mostrar la notificación una vez
       }
     },
@@ -243,7 +243,7 @@ getNotificaciones() {
 
   this.http.get<Notification[]>(`${baseUrl}/notificaciones/destinatario`, { headers }).subscribe(
     (data) => {
-      this.notificationsNew = data;
+      this.notificacionNueva = data;
     },
     (error) => {
       console.error('Error al obtener notificaciones:', error);
@@ -256,7 +256,7 @@ deleteNotificacion(id: number) {
 
   this.http.delete(`${baseUrl}/notificaciones/eliminar/${id}`, { headers }).subscribe(
     () => {
-      this.notificationsNew = this.notificationsNew.filter(notification => notification.idNotificacion !== id);
+      this.notificacionNueva = this.notificacionNueva.filter(notification => notification.idNotificacion !== id);
       this.snackBar.open('Notificación eliminada', 'Cerrar', {
         duration: 3000,
       });
@@ -351,7 +351,7 @@ modificarCita() {
 
       this.http.delete(`${baseUrl}/citas/${id}`, { headers }).subscribe(response => {
         console.log('Cita eliminada:', response);
-        this.notifications.push('Cita eliminada');
+        this.notificacion.push('Cita eliminada');
         this.getCitas(); // Actualizar la lista de citas después de eliminar una cita
       }, error => {
         console.error('Error al eliminar la cita:', error);
@@ -388,7 +388,7 @@ actualizarUsuario() {
 
     this.http.patch(`${baseUrl}/usuarios/actualizar`, usuarioData, { headers }).subscribe(response => {
       console.log('Datos del usuario actualizados:', response);
-      this.notifications.push('Datos del usuario actualizados');
+      this.notificacion.push('Datos del usuario actualizados');
       this.editMode = false;
 
       // Redirigir al dashboard correspondiente según el rol actualizado
@@ -418,7 +418,7 @@ actualizarUsuario() {
   
         this.http.delete(`${baseUrl}/usuarios/eliminar/${idUsuario}`, { headers, responseType: 'json' }).subscribe(response => {
           console.log('Usuario eliminado:', response);
-          this.notifications.push('Usuario eliminado');
+          this.notificacion.push('Usuario eliminado');
           this.router.navigate(['/login']); // Redirigir al login después de eliminar el usuario
         }, error => {
           console.error('Error al eliminar el usuario:', error);
@@ -432,12 +432,12 @@ actualizarUsuario() {
     }
   }
   mostrarNotificaciones() {
-    if (this.notifications.length > 0) {
+    if (this.notificacion.length > 0) {
       // Mostrar la notificación de que se ha recibido una nueva notificación
-      this.snackBar.open(this.notifications[0], 'Cerrar', {
+      this.snackBar.open(this.notificacion[0], 'Cerrar', {
         duration: 3000, // Duración de 3 segundos
       });
-      this.notifications = []; // Limpiar las notificaciones después de mostrarlas
+      this.notificacion = []; // Limpiar las notificaciones después de mostrarlas
     } else {
       // Si no hay notificaciones, se muestra un mensaje genérico
       this.snackBar.open('No hay notificaciones nuevas', 'Cerrar', {
