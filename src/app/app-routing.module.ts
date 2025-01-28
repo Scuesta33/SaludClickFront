@@ -5,7 +5,7 @@ import { SignupComponent } from './pages/signup/signup.component';
 import { LoginComponent } from './pages/login/login.component';
 import { DashboardMedicoComponent } from './pages/dashboard-medico/dashboard-medico.component';
 import { DashboardPacienteComponent } from './pages/dashboard-paciente/dashboard-paciente.component';
-
+// aqui se definen las rutas de la aplicacion
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'signup', component: SignupComponent },

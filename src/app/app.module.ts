@@ -22,7 +22,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { DashboardPacienteComponent } from './pages/dashboard-paciente/dashboard-paciente.component';
 import { DashboardMedicoComponent } from './pages/dashboard-medico/dashboard-medico.component';
-
+// aqui se importa modulos de angular material y componentes de la aplicacion
 @NgModule({
   declarations: [
     AppComponent,
