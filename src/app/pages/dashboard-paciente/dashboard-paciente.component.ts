@@ -154,15 +154,14 @@ export class DashboardPacienteComponent {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    // Llamada a la API para obtener todas las disponibilidades
+    
     this.http.get<any[]>(`${baseUrl}/disponibilidad/todas`, { headers }).subscribe(
       (data) => {
-        console.log('Datos de horarios recibidos:', data); // Verifica los datos de la API
-        // Mapeamos los horarios y formateamos las horas correctamente
+        console.log('Datos de horarios recibidos:', data); 
+        
         this.horarios = data.map((horario) => ({
           ...horario,
-          // Asegúrate de acceder correctamente al nombre del medico desde `medico.nombre`
-          medicoNombre: horario.medico?.nombre || 'Sin médico asignado', // Usamos `medico?.nombre` para evitar errores si no existe
+          medicoNombre: horario.medico?.nombre || 'Sin médico asignado', 
           horaInicio: this.datePipe.transform(new Date(`1970-01-01T${horario.horaInicio}`), 'HH:mm'),
           horaFin: this.datePipe.transform(new Date(`1970-01-01T${horario.horaFin}`), 'HH:mm')
         }));
@@ -182,9 +181,9 @@ export class DashboardPacienteComponent {
     fechaHora.setHours(hours, minutes);
 
     const cita = {
-      fecha: fechaHora.toISOString(), // Ensure this is in the correct format
-      estado: citaData.estado, // Ensure this matches the EstadoCita enum in the backend
-      medicoNombre: citaData.medicoNombre // Ensure this is the email of the doctor
+      fecha: fechaHora.toISOString(), 
+      estado: citaData.estado, 
+      medicoNombre: citaData.medicoNombre 
     };
 
     if (!cita.fecha || !cita.estado || !cita.medicoNombre) {
@@ -437,13 +436,11 @@ export class DashboardPacienteComponent {
   //mostrar notificacionese
   mostrarNotificaciones() {
     if (this.notificacion.length > 0) {
-      // Mostrar la notificación de que se ha recibido una nueva notificación
       this.snackBar.open(this.notificacion[0], 'Cerrar', {
         duration: 3000, // Duración de 3 segundos
       });
       this.notificacion = []; // Limpiar las notificaciones después de mostrarlas
     } else {
-      // Si no hay notificaciones, se muestra un mensaje genérico
       this.snackBar.open('No hay notificaciones nuevas', 'Cerrar', {
         duration: 3000,
       });
