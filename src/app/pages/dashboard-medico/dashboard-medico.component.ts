@@ -74,7 +74,7 @@ export class DashboardMedicoComponent {
   mostrarDisponibilidades: string[] = ['diaSemana', 'horaInicio', 'horaFin', 'acciones'];//para visualizar disponinilidades
   columnaNotificaciones: string[] = ['asunto', 'mensaje', 'remitente', 'fecha', 'acciones'];//para visualizar notificaciones
   notificacion: string[] = [];// lista de notificaciones
-  notificacionNueva: Notification[] = [];// lista de notificaciones nuevas
+  notificacionNueva: Notification[] = [];// notificaciones nuevas
   mostrarConsultas: string[] = ['id', 'fecha', 'hora', 'estado', 'pacienteNombre', 'acciones'];//para visualizar consultas
   editMode: boolean = false; // indica si se está editando el usuario
   notificacionForm: FormGroup; // Formulario para enviar notificaciones
