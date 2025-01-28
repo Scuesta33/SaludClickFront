@@ -17,7 +17,7 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent {
   constructor(private authService: AuthService, private router: Router) {}
-
+// metodo para logear un usuario
   logear(loginForm: NgForm) {
     const formData = {
       email: loginForm.value.email,
@@ -55,7 +55,7 @@ export class LoginComponent {
       }
     );
   }
-
+//metodo para redirigir a la pagina de registro
   redirigirSignup() {
     this.router.navigate(['/signup']);
   }
