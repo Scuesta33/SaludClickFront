@@ -86,7 +86,6 @@ export class DashboardPacienteComponent {
   notificacionForm: FormGroup;
 
 
-  // ...existing code...
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private router: Router,
@@ -131,18 +130,18 @@ export class DashboardPacienteComponent {
     }
   }
 
-
+//obtiene datos del usuario, citas, consultas, disponibilidades y notificaciones
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     if (isPlatformBrowser(this.platformId)) {
       this.isScreenSmall = event.target.innerWidth < 768;
     }
   }
-
+//para cambiar sección activa
   setActiveSection(section: string) {
     this.activeSection = section;
   }
-
+// se cierra el sidenav si la pantalla es pequeña
   closeSidenavIfSmall() {
     if (this.isScreenSmall && this.sidenav) {
       this.sidenav.close();
@@ -150,7 +149,7 @@ export class DashboardPacienteComponent {
   }
 
 
-
+//traer horarios de médicos
   getHorariosDisponibles() {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
@@ -175,7 +174,7 @@ export class DashboardPacienteComponent {
   }
 
 
-
+//crear cita
   crearCitas() {
     const citaData = this.citaForm.value;
     const fechaHora = new Date(citaData.fecha);
@@ -219,7 +218,7 @@ export class DashboardPacienteComponent {
       });
     }
   }
-
+//metodo para revisar notificaciones
   revisarNuevasNotificaciones() {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
@@ -236,7 +235,7 @@ export class DashboardPacienteComponent {
       }
     );
   }
-
+//obtener notificaciones
   getNotificaciones() {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
@@ -250,6 +249,7 @@ export class DashboardPacienteComponent {
       }
     );
   }
+  //eliminar notificaciones
   deleteNotificacion(id: number) {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
@@ -266,6 +266,7 @@ export class DashboardPacienteComponent {
       }
     );
   }
+  //enviar notificaciones
   enviarNotificacion() {
     const notificacionData = this.notificacionForm.value;
     const token = localStorage.getItem('token');
@@ -289,7 +290,7 @@ export class DashboardPacienteComponent {
     );
   }
 
-
+//obtener citas del paciente
   getCitas() {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
@@ -312,7 +313,7 @@ export class DashboardPacienteComponent {
     }
   }
 
-
+//modificar citas del paciente
   modificarCita() {
     if (this.modificarCitaForm.valid) {
       const formValue = this.modificarCitaForm.value;
@@ -343,7 +344,7 @@ export class DashboardPacienteComponent {
       });
     }
   }
-
+//eliminar citas del paciente
   eliminarCita(id: number) {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
@@ -361,23 +362,25 @@ export class DashboardPacienteComponent {
       });
     }
   }
+  //traer datos del usuario
   getUsuarioData() {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     this.http.get<Usuario>(`${baseUrl}/usuarios/datos`, { headers }).subscribe(usuario => {
       this.usuarioForm.patchValue({
-        id: usuario.idUsuario, // Asegúrate de asignar el ID del usuario aquí
+        id: usuario.idUsuario, 
         nombre: usuario.nombre,
         email: usuario.email,
         telefono: usuario.telefono,
-        contrasena: '', // No cargar la contraseña
+        contrasena: '', // No cargar la contraseña para no mostrarla
         rol: usuario.rol
       });
     }, error => {
       console.error('Error al obtener los datos del usuario:', error);
     });
   }
+  //actualizar datos del usuario
   actualizarUsuario() {
     const usuarioData = { ...this.usuarioForm.value };
     delete usuarioData.id; // Excluir el campo 'id'
@@ -406,7 +409,7 @@ export class DashboardPacienteComponent {
     }
   }
 
-
+ //eliminar usuario
   deleteUsuario() {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
@@ -431,6 +434,7 @@ export class DashboardPacienteComponent {
       }
     }
   }
+  //mostrar notificacionese
   mostrarNotificaciones() {
     if (this.notificacion.length > 0) {
       // Mostrar la notificación de que se ha recibido una nueva notificación
@@ -445,6 +449,7 @@ export class DashboardPacienteComponent {
       });
     }
   }
+  //cerrar sesión y redirigir al home
   logout() {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('token');
