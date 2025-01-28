@@ -20,7 +20,7 @@ import { Router } from '@angular/router';
 export class SignupComponent {
   constructor(private userService: UserService, private snack: MatSnackBar, private router: Router) {}
 
-  onSubmit(signupForm: NgForm) {
+  registrarse(signupForm: NgForm) {
     const formData = {
       nombre: signupForm.value.nombre,
       email: signupForm.value.email,
@@ -53,7 +53,7 @@ export class SignupComponent {
     );
   }
 
-  navigateToLogin() {
+  redirigirLogin() {
     this.router.navigate(['/login']);
   }
 }

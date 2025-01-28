@@ -8,7 +8,7 @@
 
         <h1 class="text-center">Registrate aquí</h1>
 
-        <form (ngSubmit)="onSubmit(signupForm)" #signupForm="ngForm">
+        <form (ngSubmit)="registrarse(signupForm)" #signupForm="ngForm">
           <div class="form-container">
             <mat-form-field class="full-width" appearance="outline">
               <mat-label>Nombre</mat-label>
@@ -51,7 +51,7 @@
         </form>
 
         <div class="text-center" style="margin-top: 20px;">
-          <p>¿Ya tienes una cuenta? <a class="login-link" (click)="navigateToLogin()">Iniciar Sesión</a></p>
+          <p>¿Ya tienes una cuenta? <a class="login-link" (click)="redirigirLogin()">Iniciar Sesión</a></p>
         </div>
       </div>
     </div>
