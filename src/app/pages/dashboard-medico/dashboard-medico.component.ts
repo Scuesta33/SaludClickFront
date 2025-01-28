@@ -71,11 +71,11 @@ export class DashboardMedicoComponent {
   citas: any[] = [];
   consultas: any[] = [];
   disponibilidades: any[] = [];
-  displayedColumnsDisponibilidades: string[] = ['diaSemana', 'horaInicio', 'horaFin', 'acciones'];//para visualizar disponinilidades
-  displayedColumnsNotifications: string[] = ['asunto', 'mensaje', 'remitente', 'fecha', 'acciones'];//para visualizar notificaciones
-  notifications: string[] = [];// lista de notificaciones
-  notificationsNew: Notification[] = [];// lista de notificaciones nuevas
-  displayedColumnsConsultas: string[] = ['id', 'fecha', 'hora', 'estado', 'pacienteNombre', 'acciones'];//para visualizar consultas
+  mostrarDisponibilidades: string[] = ['diaSemana', 'horaInicio', 'horaFin', 'acciones'];//para visualizar disponinilidades
+  columnaNotificaciones: string[] = ['asunto', 'mensaje', 'remitente', 'fecha', 'acciones'];//para visualizar notificaciones
+  notificacion: string[] = [];// lista de notificaciones
+  notificacionNueva: Notification[] = [];// lista de notificaciones nuevas
+  mostrarConsultas: string[] = ['id', 'fecha', 'hora', 'estado', 'pacienteNombre', 'acciones'];//para visualizar consultas
   editMode: boolean = false; // indica si se está editando el usuario
   notificacionForm: FormGroup; // Formulario para enviar notificaciones
 
@@ -139,7 +139,7 @@ export class DashboardMedicoComponent {
     }
   }
   //enviar el formulario de disponibilidad
-  onSubmitDisponibilidad() {
+  crearDisponibilidad() {
     const disponibilidadData = [this.disponibilidadForm.value]; // Enviar como lista
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');//obtiene el token
@@ -153,7 +153,7 @@ export class DashboardMedicoComponent {
     //realiza la petición post y maneja la respuesta
       this.http.post(`${baseUrl}/disponibilidad/crear`, disponibilidadData, { headers }).subscribe(response => {
         console.log('Disponibilidad creada:', response);
-        this.notifications.push('Disponibilidad creada');
+        this.notificacion.push('Disponibilidad creada');
       }, error => {
         console.error('Error al crear la disponibilidad:', error);
         if (error.status === 0) {
@@ -191,15 +191,15 @@ export class DashboardMedicoComponent {
     );
   }
   //verifica si hay nuevas notificaciones
-  checkForNewNotifications() {
+  revisarNuevasNotificaciones() {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     this.http.get<any[]>(`${baseUrl}/notificaciones/destinatario`, { headers }).subscribe(
       (data) => {
         if (data && data.length > 0) {
-          this.notifications.push('Has recibido una nueva notificación');
-          this.showNotifications(); // Muestra la notificación una vez
+          this.notificacion.push('Has recibido una nueva notificación');
+          this.mostrarNotificaciones(); // Muestra la notificación una vez
         }
       },
       (error) => {
@@ -214,7 +214,7 @@ export class DashboardMedicoComponent {
 
     this.http.get<Notification[]>(`${baseUrl}/notificaciones/destinatario`, { headers }).subscribe(
       (data) => {
-        this.notificationsNew = data;
+        this.notificacionNueva = data;
       },
       (error) => {
         console.error('Error al obtener notificaciones:', error);
@@ -222,13 +222,13 @@ export class DashboardMedicoComponent {
     );
   }
   //elimina una notificación por id
-  deleteNotification(id: number) {
+  deleteNotificacion(id: number) {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     this.http.delete(`${baseUrl}/notificaciones/eliminar/${id}`, { headers }).subscribe(
       () => {
-        this.notificationsNew = this.notificationsNew.filter(notification => notification.idNotificacion !== id);
+        this.notificacionNueva = this.notificacionNueva.filter(notification => notification.idNotificacion !== id);
         this.snackBar.open('Notificación eliminada', 'Cerrar', {
           duration: 3000,
         });
@@ -267,7 +267,7 @@ export class DashboardMedicoComponent {
     );
   }
 //elimina una disponibilidad por id
-  eliminarDisponibilidad(idDisponibilidad: number): void {
+  deleteDisponibilidad(idDisponibilidad: number): void {
     if (idDisponibilidad === undefined || idDisponibilidad === null) {
       console.error('ID de disponibilidad no válido:', idDisponibilidad);
       this.snackBar.open('ID de disponibilidad no válido', 'Cerrar', {
@@ -302,7 +302,7 @@ export class DashboardMedicoComponent {
   }
 
 //modifica una cita existente
-  onModificarSubmit() {
+  modificarCitas() {
     if (this.modificarCitaForm.valid) {
       const citaData = this.modificarCitaForm.value;
       const fechaHora = new Date(citaData.fecha);
@@ -321,7 +321,7 @@ export class DashboardMedicoComponent {
   
         this.http.put(`${baseUrl}/citas/${cita.id}`, cita, { headers }).subscribe(response => {
           console.log('Cita modificada:', response);
-          this.notifications.push('Cita modificada');
+          this.notificacion.push('Cita modificada');
           this.getCitas();
           this.getConsultas();
         }, error => {
@@ -352,7 +352,7 @@ export class DashboardMedicoComponent {
     this.http.put(url, body, { headers }).subscribe(
       response => {
         console.log(`Cita ${estado.toLowerCase()} correctamente:`, response);
-        this.notifications.push(`Cita ${estado.toLowerCase()}`);
+        this.notificacion.push(`Cita ${estado.toLowerCase()}`);
         this.getCitas();
         this.getConsultas();
       },
@@ -421,7 +421,7 @@ export class DashboardMedicoComponent {
     });
   }
 //método para actualizar datos de usuario
-  onUsuarioSubmit() {
+  actualizarUsuario() {
     const usuarioData = { ...this.usuarioForm.value };
     delete usuarioData.id; // Excluir el campo 'id'
     if (isPlatformBrowser(this.platformId)) {
@@ -430,7 +430,7 @@ export class DashboardMedicoComponent {
   
       this.http.patch(`${baseUrl}/usuarios/actualizar`, usuarioData, { headers }).subscribe(response => {
         console.log('Datos del usuario actualizados:', response);
-        this.notifications.push('Datos del usuario actualizados');
+        this.notificacion.push('Datos del usuario actualizados');
         this.editMode = false;
   
         // Redirigir al dashboard correspondiente según el rol actualizado
@@ -448,7 +448,7 @@ export class DashboardMedicoComponent {
     }
   }
 //método para eliminar un usuario
-  onEliminarUsuario() {
+  deleteUsuario() {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
@@ -459,7 +459,7 @@ export class DashboardMedicoComponent {
   
         this.http.delete(`${baseUrl}/usuarios/eliminar/${idUsuario}`, { headers, responseType: 'json' }).subscribe(response => {
           console.log('Usuario eliminado:', response);
-          this.notifications.push('Usuario eliminado');
+          this.notificacion.push('Usuario eliminado');
           this.router.navigate(['/login']); // Redirigir al login después de eliminar el usuario
         }, error => {
           console.error('Error al eliminar el usuario:', error);
@@ -473,13 +473,13 @@ export class DashboardMedicoComponent {
     }
   }
 //método para mostrar notificaciones
-  showNotifications() {
-    if (this.notifications.length > 0) {
+  mostrarNotificaciones() {
+    if (this.notificacion.length > 0) {
       // Mostrar la notificación de que se ha recibido una nueva notificación
-      this.snackBar.open(this.notifications[0], 'Cerrar', {
+      this.snackBar.open(this.notificacion[0], 'Cerrar', {
         duration: 3000, // 3 segundos
       });
-      this.notifications = []; 
+      this.notificacion = []; 
     } else {
       
       this.snackBar.open('No hay notificaciones nuevas', 'Cerrar', {

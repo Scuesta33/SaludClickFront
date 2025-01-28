@@ -44,9 +44,9 @@
       </button>
       Médico
       <span class="spacer"></span>
-      <button mat-icon-button (click)="showNotifications()">
+      <button mat-icon-button (click)="mostrarNotificaciones()">
         <mat-icon>notifications</mat-icon>
-        <span *ngIf="notifications.length" class="notification-badge">{{ notifications.length }}</span>
+        <span *ngIf="notificacion.length" class="notification-badge">{{ notificacion.length }}</span>
       </button>
     </mat-toolbar>
     <div class="content">
@@ -70,7 +70,7 @@
       </div>
       <div *ngIf="activeSection === 'visualizar-notificaciones'">
         <h2>Notificaciones</h2>
-        <table mat-table [dataSource]="notificationsNew" class="mat-elevation-z8">
+        <table mat-table [dataSource]="notificacionNueva" class="mat-elevation-z8">
           <ng-container matColumnDef="asunto">
             <th mat-header-cell *matHeaderCellDef> Asunto </th>
             <td mat-cell *matCellDef="let notification"> {{notification.asunto}} </td>
@@ -90,16 +90,16 @@
           <ng-container matColumnDef="acciones">
             <th mat-header-cell *matHeaderCellDef> Acciones </th>
             <td mat-cell *matCellDef="let notification">
-              <button mat-button color="warn" (click)="deleteNotification(notification.idNotificacion)">Eliminar</button>
+              <button mat-button color="warn" (click)="deleteNotificacion(notification.idNotificacion)">Eliminar</button>
             </td>
           </ng-container>
-          <tr mat-header-row *matHeaderRowDef="displayedColumnsNotifications"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumnsNotifications;"></tr>
+          <tr mat-header-row *matHeaderRowDef="columnaNotificaciones"></tr>
+          <tr mat-row *matRowDef="let row; columns: columnaNotificaciones;"></tr>
         </table>
       </div>
       <div *ngIf="activeSection === 'crear-disponibilidades'">
         <h2>Crear disponibilidades</h2>
-        <form [formGroup]="disponibilidadForm" (ngSubmit)="onSubmitDisponibilidad()">
+        <form [formGroup]="disponibilidadForm" (ngSubmit)="crearDisponibilidad()">
           <mat-form-field>
             <mat-label>Día de la Semana</mat-label>
             <mat-select formControlName="diaSemana">
@@ -135,16 +135,16 @@
           <ng-container matColumnDef="acciones">
             <th mat-header-cell *matHeaderCellDef> Acciones </th>
             <td mat-cell *matCellDef="let disponibilidad">
-              <button mat-button color="warn" (click)="eliminarDisponibilidad(disponibilidad.idDisponibilidad)">Eliminar</button>
+              <button mat-button color="warn" (click)="deleteDisponibilidad(disponibilidad.idDisponibilidad)">Eliminar</button>
             </td>
           </ng-container>
-          <tr mat-header-row *matHeaderRowDef="displayedColumnsDisponibilidades"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumnsDisponibilidades;"></tr>
+          <tr mat-header-row *matHeaderRowDef="mostrarDisponibilidades"></tr>
+          <tr mat-row *matRowDef="let row; columns: mostrarDisponibilidades;"></tr>
         </table>
       </div>
       <div *ngIf="activeSection === 'modificar-citas'">
         <h2>Modificar cita</h2>
-        <form [formGroup]="modificarCitaForm" (ngSubmit)="onModificarSubmit()">
+        <form [formGroup]="modificarCitaForm" (ngSubmit)="modificarCitas()">
           <mat-form-field appearance="fill">
             <mat-label>ID de la Cita</mat-label>
             <input matInput formControlName="id">
@@ -205,8 +205,8 @@
             </td>
           </ng-container>
         
-          <tr mat-header-row *matHeaderRowDef="displayedColumnsConsultas"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumnsConsultas;"></tr>
+          <tr mat-header-row *matHeaderRowDef="mostrarConsultas"></tr>
+          <tr mat-row *matRowDef="let row; columns: mostrarConsultas;"></tr>
         </table>
       </div>
       <div *ngIf="activeSection === 'datos-usuario'">
@@ -225,7 +225,7 @@
             <button mat-raised-button color="primary" (click)="editMode = true">Editar</button>
           </mat-card-actions>
         </mat-card>
-        <form *ngIf="editMode" [formGroup]="usuarioForm" (ngSubmit)="onUsuarioSubmit()">
+        <form *ngIf="editMode" [formGroup]="usuarioForm" (ngSubmit)="actualizarUsuario()">
           <mat-form-field appearance="fill">
             <mat-label>Nombre</mat-label>
             <input matInput formControlName="nombre">
@@ -250,7 +250,7 @@
             </mat-select>
           </mat-form-field>
           <button mat-raised-button color="primary" type="submit">Actualizar Datos</button>
-          <button mat-raised-button color="warn" (click)="onEliminarUsuario()">Eliminar Usuario</button>
+          <button mat-raised-button color="warn" (click)="deleteUsuario()">Eliminar Usuario</button>
           <button mat-raised-button (click)="editMode = false">Cancelar</button>
         </form>
       </div>
