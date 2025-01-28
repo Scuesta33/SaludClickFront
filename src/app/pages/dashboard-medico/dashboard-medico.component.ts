@@ -177,7 +177,7 @@ export class DashboardMedicoComponent {
       estado: 'PENDIENTE', // Estado predeterminado
       mensaje: notificacionData.mensaje,
       destinatarioNombre: notificacionData.destinatarioNombre
-    };
+    };//realiza la petición post y maneja la respuesta
     this.http.post(`${baseUrl}/notificaciones/enviar`, null, { headers, params }).subscribe(
       (response) => {
         console.log('Notificación enviada:', response);
@@ -194,7 +194,7 @@ export class DashboardMedicoComponent {
   revisarNuevasNotificaciones() {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
+//realiza la petición get y maneja la respuesta
     this.http.get<any[]>(`${baseUrl}/notificaciones/destinatario`, { headers }).subscribe(
       (data) => {
         if (data && data.length > 0) {
@@ -211,7 +211,7 @@ export class DashboardMedicoComponent {
   getNotificaciones() {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
+//realiza la petición get y maneja la respuesta
     this.http.get<Notification[]>(`${baseUrl}/notificaciones/destinatario`, { headers }).subscribe(
       (data) => {
         this.notificacionNueva = data;
@@ -225,7 +225,7 @@ export class DashboardMedicoComponent {
   deleteNotificacion(id: number) {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
+//realiza la petición delete y maneja la respuesta
     this.http.delete(`${baseUrl}/notificaciones/eliminar/${id}`, { headers }).subscribe(
       () => {
         this.notificacionNueva = this.notificacionNueva.filter(notification => notification.idNotificacion !== id);
@@ -251,7 +251,7 @@ export class DashboardMedicoComponent {
     }
   
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    
+    //realiza la petición get y maneja la respuesta
     this.http.get<any[]>(`${baseUrl}/disponibilidad/medico`, { headers }).subscribe(
       (data) => {
         this.disponibilidades = data;
@@ -278,6 +278,7 @@ export class DashboardMedicoComponent {
   
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    //realiza la petición delete y maneja la respuesta
     this.http.delete(`${baseUrl}/disponibilidad/${idDisponibilidad}`, { headers }).subscribe(
       (response) => {
         console.log('Disponibilidad eliminada:', response);
@@ -318,7 +319,7 @@ export class DashboardMedicoComponent {
       if (isPlatformBrowser(this.platformId)) {
         const token = localStorage.getItem('token');
         const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  
+        //realiza la petición put y maneja la respuesta
         this.http.put(`${baseUrl}/citas/${cita.id}`, cita, { headers }).subscribe(response => {
           console.log('Cita modificada:', response);
           this.notificacion.push('Cita modificada');
@@ -333,10 +334,11 @@ export class DashboardMedicoComponent {
       }
     }
   }
+  //para eliminar una cita
   deleteCita(id: number) {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  
+  //realiza la petición delete y maneja la respuesta
     this.http.delete(`${baseUrl}/citas/${id}`, { headers }).subscribe(
       () => {
         this.snackBar.open('Cita eliminada', 'Cerrar', {
@@ -367,7 +369,7 @@ export class DashboardMedicoComponent {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     const url = `${baseUrl}/citas/${id}`;
     const body = { estado };
-  
+    //realiza la petición put y maneja la respuesta
     this.http.put(url, body, { headers }).subscribe(
       response => {
         console.log(`Cita ${estado.toLowerCase()} correctamente:`, response);
@@ -388,7 +390,7 @@ export class DashboardMedicoComponent {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
+      //realiza la petición get y maneja la respuesta
       this.http.get(`${baseUrl}/citas`, { headers }).subscribe((data: any) => {
         this.citas = data;
       }, error => {
@@ -404,7 +406,7 @@ export class DashboardMedicoComponent {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
+//realiza la petición get y maneja la respuesta
       this.http.get(`${baseUrl}/citas/consultas`, { headers }).subscribe((data: any) => {
         this.consultas = data.map((consulta: any) => {
           return {
@@ -425,7 +427,7 @@ export class DashboardMedicoComponent {
   getUsuarioData() {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  
+  //realiza la petición get y maneja la respuesta
     this.http.get<Usuario>(`${baseUrl}/usuarios/datos`, { headers }).subscribe(usuario => {
       this.usuarioForm.patchValue({
         id: usuario.idUsuario, // Asegúrate de asignar el ID del usuario aquí
@@ -446,7 +448,7 @@ export class DashboardMedicoComponent {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  
+  //realiza la petición patch y maneja la respuesta
       this.http.patch(`${baseUrl}/usuarios/actualizar`, usuarioData, { headers }).subscribe(response => {
         console.log('Datos del usuario actualizados:', response);
         this.notificacion.push('Datos del usuario actualizados');
@@ -475,7 +477,7 @@ export class DashboardMedicoComponent {
   
       if (idControl && idControl.value) {
         const idUsuario = idControl.value;
-  
+  //realiza la petición delete y maneja la respuesta
         this.http.delete(`${baseUrl}/usuarios/eliminar/${idUsuario}`, { headers, responseType: 'json' }).subscribe(response => {
           console.log('Usuario eliminado:', response);
           this.notificacion.push('Usuario eliminado');
