@@ -333,6 +333,25 @@ export class DashboardMedicoComponent {
       }
     }
   }
+  deleteCita(id: number) {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  
+    this.http.delete(`${baseUrl}/citas/${id}`, { headers }).subscribe(
+      () => {
+        this.snackBar.open('Cita eliminada', 'Cerrar', {
+          duration: 3000,
+        });
+        this.getCitas(); // Actualiza la lista de citas después de eliminar una
+      },
+      (error) => {
+        console.error('Error al eliminar la cita:', error);
+        this.snackBar.open('Error al eliminar la cita', 'Cerrar', {
+          duration: 3000,
+        });
+      }
+    );
+  }
   //método para aceptar una cita
   aceptarCita(id: string) {
     this.actualizarEstadoCita(id, 'ACEPTADA');
