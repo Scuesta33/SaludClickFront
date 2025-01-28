@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -87,49 +87,49 @@ export class DashboardPacienteComponent {
 
 
   // ...existing code...
-constructor(
-  @Inject(PLATFORM_ID) private platformId: Object,
-  private router: Router,
-  private fb: FormBuilder,
-  private http: HttpClient,
-  private snackBar: MatSnackBar,
-  private datePipe: DatePipe
-) {
-  this.isScreenSmall = isPlatformBrowser(this.platformId) ? window.innerWidth < 768 : false;
-  this.citaForm = this.fb.group({
-    fecha: [''],
-    hora: [''],
-    estado: ['PENDIENTE'],
-    medicoNombre: ['']
-  });
-  this.modificarCitaForm = this.fb.group({
-    id: [''],
-    fecha: [''],
-    hora: [''],
-    estado: ['PENDIENTE'],
-    medicoNombre: ['']
-  });
-  this.usuarioForm = this.fb.group({
-    id: [''], 
-    nombre: [''],
-    email: [''],
-    telefono: [''],
-    contrasena: [''],
-    rol: ['']
-  });
-  this.notificacionForm = this.fb.group({
-    asunto: ['', Validators.required],
-    mensaje: ['', Validators.required],
-    destinatarioNombre: ['', Validators.required]
-  });
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private router: Router,
+    private fb: FormBuilder,
+    private http: HttpClient,
+    private snackBar: MatSnackBar,
+    private datePipe: DatePipe
+  ) {
+    this.isScreenSmall = isPlatformBrowser(this.platformId) ? window.innerWidth < 768 : false;
+    this.citaForm = this.fb.group({
+      fecha: [''],
+      hora: [''],
+      estado: ['PENDIENTE'],
+      medicoNombre: ['']
+    });
+    this.modificarCitaForm = this.fb.group({
+      id: [''],
+      fecha: [''],
+      hora: [''],
+      estado: ['PENDIENTE'],
+      medicoNombre: ['']
+    });
+    this.usuarioForm = this.fb.group({
+      id: [''],
+      nombre: [''],
+      email: [''],
+      telefono: [''],
+      contrasena: [''],
+      rol: ['']
+    });
+    this.notificacionForm = this.fb.group({
+      asunto: ['', Validators.required],
+      mensaje: ['', Validators.required],
+      destinatarioNombre: ['', Validators.required]
+    });
 
-  if (isPlatformBrowser(this.platformId)) {
-    this.getUsuarioData();
-    this.getCitas();
-    this.getHorariosDisponibles();
-    this.getNotificaciones();
+    if (isPlatformBrowser(this.platformId)) {
+      this.getUsuarioData();
+      this.getCitas();
+      this.getHorariosDisponibles();
+      this.getNotificaciones();
+    }
   }
-}
 
 
   @HostListener('window:resize', ['$event'])
@@ -148,13 +148,13 @@ constructor(
       this.sidenav.close();
     }
   }
-  
-  
- 
+
+
+
   getHorariosDisponibles() {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    
+
     // Llamada a la API para obtener todas las disponibilidades
     this.http.get<any[]>(`${baseUrl}/disponibilidad/todas`, { headers }).subscribe(
       (data) => {
@@ -173,128 +173,128 @@ constructor(
       }
     );
   }
-  
 
-  
-crearCitas() {
-  const citaData = this.citaForm.value;
-  const fechaHora = new Date(citaData.fecha);
-  const [hours, minutes] = citaData.hora.split(':');
-  fechaHora.setHours(hours, minutes);
 
-  const cita = {
-    fecha: fechaHora.toISOString(), // Ensure this is in the correct format
-    estado: citaData.estado, // Ensure this matches the EstadoCita enum in the backend
-    medicoNombre: citaData.medicoNombre // Ensure this is the email of the doctor
-  };
 
-  if (!cita.fecha || !cita.estado || !cita.medicoNombre) {
-    console.error('Datos incompletos para crear la cita:', cita);
-    return;
-  }
+  crearCitas() {
+    const citaData = this.citaForm.value;
+    const fechaHora = new Date(citaData.fecha);
+    const [hours, minutes] = citaData.hora.split(':');
+    fechaHora.setHours(hours, minutes);
 
-  if (isPlatformBrowser(this.platformId)) {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      console.error('No token found');
+    const cita = {
+      fecha: fechaHora.toISOString(), // Ensure this is in the correct format
+      estado: citaData.estado, // Ensure this matches the EstadoCita enum in the backend
+      medicoNombre: citaData.medicoNombre // Ensure this is the email of the doctor
+    };
+
+    if (!cita.fecha || !cita.estado || !cita.medicoNombre) {
+      console.error('Datos incompletos para crear la cita:', cita);
       return;
     }
 
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No token found');
+        return;
+      }
+
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      this.http.post(`${baseUrl}/citas/crear`, cita, { headers }).subscribe(response => {
+        console.log('Cita creada:', response);
+        this.notificacion.push('Cita creada');
+        this.getCitas(); // Actualizar la lista de citas después de crear una nueva
+      }, error => {
+        console.error('Error al crear la cita:', error);
+        if (error.status === 0) {
+          console.error('El backend no está activado.');
+        } else if (error.status === 400) {
+          console.error('Solicitud incorrecta. Verifica los datos enviados:', cita);
+          if (error.error) {
+            console.error('Detalles del error:', error.error);
+          }
+        }
+      });
+    }
+  }
+
+  revisarNuevasNotificaciones() {
+    const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    this.http.post(`${baseUrl}/citas/crear`, cita, { headers }).subscribe(response => {
-      console.log('Cita creada:', response);
-      this.notificacion.push('Cita creada');
-      this.getCitas(); // Actualizar la lista de citas después de crear una nueva
-    }, error => {
-      console.error('Error al crear la cita:', error);
-      if (error.status === 0) {
-        console.error('El backend no está activado.');
-      } else if (error.status === 400) {
-        console.error('Solicitud incorrecta. Verifica los datos enviados:', cita);
-        if (error.error) {
-          console.error('Detalles del error:', error.error);
+    this.http.get<any[]>(`${baseUrl}/notificaciones/destinatario`, { headers }).subscribe(
+      (data) => {
+        if (data && data.length > 0) {
+          this.notificacion.push('Has recibido una nueva notificación');
+          this.mostrarNotificaciones(); // Mostrar la notificación una vez
         }
+      },
+      (error) => {
+        console.error('Error al obtener notificaciones:', error);
       }
-    });
+    );
   }
-}
 
-revisarNuevasNotificaciones() {
-  const token = localStorage.getItem('token');
-  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  getNotificaciones() {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-  this.http.get<any[]>(`${baseUrl}/notificaciones/destinatario`, { headers }).subscribe(
-    (data) => {
-      if (data && data.length > 0) {
-        this.notificacion.push('Has recibido una nueva notificación');
-        this.mostrarNotificaciones(); // Mostrar la notificación una vez
+    this.http.get<Notification[]>(`${baseUrl}/notificaciones/destinatario`, { headers }).subscribe(
+      (data) => {
+        this.notificacionNueva = data;
+      },
+      (error) => {
+        console.error('Error al obtener notificaciones:', error);
       }
-    },
-    (error) => {
-      console.error('Error al obtener notificaciones:', error);
-    }
-  );
-}
+    );
+  }
+  deleteNotificacion(id: number) {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-getNotificaciones() {
-  const token = localStorage.getItem('token');
-  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    this.http.delete(`${baseUrl}/notificaciones/eliminar/${id}`, { headers }).subscribe(
+      () => {
+        this.notificacionNueva = this.notificacionNueva.filter(notification => notification.idNotificacion !== id);
+        this.snackBar.open('Notificación eliminada', 'Cerrar', {
+          duration: 3000,
+        });
+      },
+      (error) => {
+        console.error('Error al eliminar la notificación:', error);
+      }
+    );
+  }
+  enviarNotificacion() {
+    const notificacionData = this.notificacionForm.value;
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    const params = {
+      asunto: notificacionData.asunto,
+      estado: 'PENDIENTE', // Estado predeterminado
+      mensaje: notificacionData.mensaje,
+      destinatarioNombre: notificacionData.destinatarioNombre
+    };
+    this.http.post(`${baseUrl}/notificaciones/enviar`, null, { headers, params }).subscribe(
+      (response) => {
+        console.log('Notificación enviada:', response);
+        this.snackBar.open('Notificación enviada', 'Cerrar', {
+          duration: 3000,
+        });
+      },
+      (error) => {
+        console.error('Error al enviar la notificación:', error);
+      }
+    );
+  }
 
-  this.http.get<Notification[]>(`${baseUrl}/notificaciones/destinatario`, { headers }).subscribe(
-    (data) => {
-      this.notificacionNueva = data;
-    },
-    (error) => {
-      console.error('Error al obtener notificaciones:', error);
-    }
-  );
-}
-deleteNotificacion(id: number) {
-  const token = localStorage.getItem('token');
-  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
-  this.http.delete(`${baseUrl}/notificaciones/eliminar/${id}`, { headers }).subscribe(
-    () => {
-      this.notificacionNueva = this.notificacionNueva.filter(notification => notification.idNotificacion !== id);
-      this.snackBar.open('Notificación eliminada', 'Cerrar', {
-        duration: 3000,
-      });
-    },
-    (error) => {
-      console.error('Error al eliminar la notificación:', error);
-    }
-  );
-}
-enviarNotificacion() {
-  const notificacionData = this.notificacionForm.value;
-  const token = localStorage.getItem('token');
-  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  const params = {
-    asunto: notificacionData.asunto,
-    estado: 'PENDIENTE', // Estado predeterminado
-    mensaje: notificacionData.mensaje,
-    destinatarioNombre: notificacionData.destinatarioNombre
-  };
-  this.http.post(`${baseUrl}/notificaciones/enviar`, null, { headers, params }).subscribe(
-    (response) => {
-      console.log('Notificación enviada:', response);
-      this.snackBar.open('Notificación enviada', 'Cerrar', {
-        duration: 3000,
-      });
-    },
-    (error) => {
-      console.error('Error al enviar la notificación:', error);
-    }
-  );
-}
- 
 
   getCitas() {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  
+
       this.http.get<Cita[]>(`${baseUrl}/citas`, { headers }).subscribe((data: Cita[]) => {
         this.citas = data.map(cita => {
           return {
@@ -311,38 +311,38 @@ enviarNotificacion() {
       });
     }
   }
-  
 
-modificarCita() {
-  if (this.modificarCitaForm.valid) {
-    const formValue = this.modificarCitaForm.value;
-    const fecha = new Date(formValue.fecha);
-    const [hours, minutes] = formValue.hora.split(':');
-    fecha.setHours(hours, minutes, 0, 0); // Asegúrate de establecer los segundos y milisegundos a 0
 
-    const citaModificada = {
-      id: formValue.id,
-      fecha: fecha.toISOString(),
-      estado: formValue.estado || 'PENDIENTE',
-      medicoNombre: formValue.medicoNombre // El paciente no puede modificar el estado
-    };
+  modificarCita() {
+    if (this.modificarCitaForm.valid) {
+      const formValue = this.modificarCitaForm.value;
+      const fecha = new Date(formValue.fecha);
+      const [hours, minutes] = formValue.hora.split(':');
+      fecha.setHours(hours, minutes, 0, 0); // Asegúrate de establecer los segundos y milisegundos a 0
 
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+      const citaModificada = {
+        id: formValue.id,
+        fecha: fecha.toISOString(),
+        estado: formValue.estado || 'PENDIENTE',
+        medicoNombre: formValue.medicoNombre // El paciente no puede modificar el estado
+      };
 
-    this.http.put(`${baseUrl}/citas/${formValue.id}`, citaModificada, { headers }).subscribe(response => {
-      this.snackBar.open('Cita modificada correctamente', 'Cerrar', {
-        duration: 3000,
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      this.http.put(`${baseUrl}/citas/${formValue.id}`, citaModificada, { headers }).subscribe(response => {
+        this.snackBar.open('Cita modificada correctamente', 'Cerrar', {
+          duration: 3000,
+        });
+        this.getCitas();
+      }, error => {
+        console.error('Error al modificar la cita:', error);
+        this.snackBar.open('Error al modificar la cita', 'Cerrar', {
+          duration: 3000,
+        });
       });
-      this.getCitas();
-    }, error => {
-      console.error('Error al modificar la cita:', error);
-      this.snackBar.open('Error al modificar la cita', 'Cerrar', {
-        duration: 3000,
-      });
-    });
+    }
   }
-}
 
   eliminarCita(id: number) {
     if (isPlatformBrowser(this.platformId)) {
@@ -361,61 +361,61 @@ modificarCita() {
       });
     }
   }
-getUsuarioData() {
-  const token = localStorage.getItem('token');
-  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
-  this.http.get<Usuario>(`${baseUrl}/usuarios/datos`, { headers }).subscribe(usuario => {
-    this.usuarioForm.patchValue({
-      id: usuario.idUsuario, // Asegúrate de asignar el ID del usuario aquí
-      nombre: usuario.nombre,
-      email: usuario.email,
-      telefono: usuario.telefono,
-      contrasena: '', // No cargar la contraseña
-      rol: usuario.rol
-    });
-  }, error => {
-    console.error('Error al obtener los datos del usuario:', error);
-  });
-}
-actualizarUsuario() {
-  const usuarioData = { ...this.usuarioForm.value };
-  delete usuarioData.id; // Excluir el campo 'id'
-  
-  if (isPlatformBrowser(this.platformId)) {
+  getUsuarioData() {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    this.http.patch(`${baseUrl}/usuarios/actualizar`, usuarioData, { headers }).subscribe(response => {
-      console.log('Datos del usuario actualizados:', response);
-      this.notificacion.push('Datos del usuario actualizados');
-      this.editMode = false;
-
-      // Redirigir al dashboard correspondiente según el rol actualizado
-      if (usuarioData.rol === 'MEDICO') {
-        this.router.navigate(['/dashboard-medico']);
-      } else if (usuarioData.rol === 'PACIENTE') {
-        this.router.navigate(['/dashboard-paciente']);
-      }
+    this.http.get<Usuario>(`${baseUrl}/usuarios/datos`, { headers }).subscribe(usuario => {
+      this.usuarioForm.patchValue({
+        id: usuario.idUsuario, // Asegúrate de asignar el ID del usuario aquí
+        nombre: usuario.nombre,
+        email: usuario.email,
+        telefono: usuario.telefono,
+        contrasena: '', // No cargar la contraseña
+        rol: usuario.rol
+      });
     }, error => {
-      console.error('Error al actualizar los datos del usuario:', error);
-      if (error.status === 0) {
-        console.error('El backend no está activado.');
-      }
+      console.error('Error al obtener los datos del usuario:', error);
     });
   }
-}
-  
+  actualizarUsuario() {
+    const usuarioData = { ...this.usuarioForm.value };
+    delete usuarioData.id; // Excluir el campo 'id'
 
-   deleteUsuario() {
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      this.http.patch(`${baseUrl}/usuarios/actualizar`, usuarioData, { headers }).subscribe(response => {
+        console.log('Datos del usuario actualizados:', response);
+        this.notificacion.push('Datos del usuario actualizados');
+        this.editMode = false;
+
+        // Redirigir al dashboard correspondiente según el rol actualizado
+        if (usuarioData.rol === 'MEDICO') {
+          this.router.navigate(['/dashboard-medico']);
+        } else if (usuarioData.rol === 'PACIENTE') {
+          this.router.navigate(['/dashboard-paciente']);
+        }
+      }, error => {
+        console.error('Error al actualizar los datos del usuario:', error);
+        if (error.status === 0) {
+          console.error('El backend no está activado.');
+        }
+      });
+    }
+  }
+
+
+  deleteUsuario() {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
       const idControl = this.usuarioForm.get('id');
-  
+
       if (idControl && idControl.value) {
         const idUsuario = idControl.value;
-  
+
         this.http.delete(`${baseUrl}/usuarios/eliminar/${idUsuario}`, { headers, responseType: 'json' }).subscribe(response => {
           console.log('Usuario eliminado:', response);
           this.notificacion.push('Usuario eliminado');
