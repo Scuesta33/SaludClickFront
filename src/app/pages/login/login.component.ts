@@ -18,7 +18,7 @@ import { Router } from '@angular/router';
 export class LoginComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
-  onSubmit(loginForm: NgForm) {
+  logear(loginForm: NgForm) {
     const formData = {
       email: loginForm.value.email,
       contrasena: loginForm.value.contrasena
@@ -56,7 +56,7 @@ export class LoginComponent {
     );
   }
 
-  navigateToSignup() {
+  redirigirSignup() {
     this.router.navigate(['/signup']);
   }
 }

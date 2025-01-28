@@ -8,7 +8,7 @@
 
         <h1 class="text-center">Iniciar Sesión</h1>
 
-        <form (ngSubmit)="onSubmit(loginForm)" #loginForm="ngForm">
+        <form (ngSubmit)="logear(loginForm)" #loginForm="ngForm">
           <div class="form-container">
             <mat-form-field class="full-width" appearance="outline">
               <mat-label>Email</mat-label>
@@ -28,7 +28,7 @@
         </form>
 
         <div class="text-center" style="margin-top: 20px;">
-          <p>¿No tienes una cuenta? <a class="signup-link" (click)="navigateToSignup()">Registrarse</a></p>
+          <p>¿No tienes una cuenta? <a class="signup-link" (click)="redirigirSignup()">Registrarse</a></p>
         </div>
       </div>
     </div>
