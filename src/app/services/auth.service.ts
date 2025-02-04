@@ -9,7 +9,6 @@ import baserUrl from './helper';
 export class AuthService {
   constructor(private httpClient: HttpClient) {}
 
-  // se encarga de hacer una peticion post a la api para registrar un usuario
   login(credentials: any): Observable<any> {
     return this.httpClient.post(`${baserUrl}/auth/login`, credentials);
   }

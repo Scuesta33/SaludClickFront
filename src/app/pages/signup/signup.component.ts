@@ -19,7 +19,7 @@ import { Router } from '@angular/router';
 })
 export class SignupComponent {
   constructor(private userService: UserService, private snack: MatSnackBar, private router: Router) {}
-// metodo para registrar un usuario
+
   registrarse(signupForm: NgForm) {
     const formData = {
       nombre: signupForm.value.nombre,
@@ -52,7 +52,7 @@ export class SignupComponent {
       }
     );
   }
-// metodo para redirigir a la pagina de login
+
   redirigirLogin() {
     this.router.navigate(['/login']);
   }
