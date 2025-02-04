@@ -21,7 +21,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DatePipe } from '@angular/common';
 import baseUrl from '../../services/helper';
 
-// interface para notificaciones
 interface Notification {
   idNotificacion: number;
   asunto: string;
@@ -29,7 +28,6 @@ interface Notification {
   fechaEnvio: Date;
   usuario: { nombre: string };
 }
-// interface para usuario
 interface Usuario {
   idUsuario: string;
   nombre: string;
@@ -38,7 +36,6 @@ interface Usuario {
   rol: string;
 }
 
-// interface para citas
 interface Cita {
   id: number;
   fecha: string;
@@ -75,8 +72,8 @@ export class DashboardPacienteComponent {
   citaForm: FormGroup;         //formularios para crear citas, modificar citas, datos del usuario  
   modificarCitaForm: FormGroup;
   usuarioForm: FormGroup;
-  citas: any[] = [];//arreglo para citas
-  horarios: any[] = [];//arreglo para horarios
+  citas: any[] = [];
+  horarios: any[] = [];
   notificacion: string[] = [];
   notificacionNueva: Notification[] = [];
   mostrarCitas: string[] = ['id', 'fecha', 'hora', 'estado', 'medicoNombre'];
@@ -130,18 +127,18 @@ export class DashboardPacienteComponent {
     }
   }
 
-//obtiene datos del usuario, citas, consultas, disponibilidades y notificaciones
+  //obtiene datos del usuario, citas, consultas, disponibilidades y notificaciones
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     if (isPlatformBrowser(this.platformId)) {
       this.isScreenSmall = event.target.innerWidth < 768;
     }
   }
-//para cambiar sección activa
+  //para cambiar sección activa
   setActiveSection(section: string) {
     this.activeSection = section;
   }
-// se cierra el sidenav si la pantalla es pequeña
+  //se cierra el sidenav si la pantalla es pequeña
   closeSidenavIfSmall() {
     if (this.isScreenSmall && this.sidenav) {
       this.sidenav.close();
@@ -149,31 +146,31 @@ export class DashboardPacienteComponent {
   }
 
 
-//traer horarios de médicos
+  
   getHorariosDisponibles() {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    
+
     this.http.get<any[]>(`${baseUrl}/disponibilidad/todas`, { headers }).subscribe(
       (data) => {
-        console.log('Datos de horarios recibidos:', data); 
-        
+        console.log('datos de horarios recibidos:', data);
+
         this.horarios = data.map((horario) => ({
           ...horario,
-          medicoNombre: horario.medico?.nombre || 'Sin médico asignado', 
+          medicoNombre: horario.medico?.nombre || 'Sin médico asignado',
           horaInicio: this.datePipe.transform(new Date(`1970-01-01T${horario.horaInicio}`), 'HH:mm'),
           horaFin: this.datePipe.transform(new Date(`1970-01-01T${horario.horaFin}`), 'HH:mm')
         }));
       },
       (error) => {
-        console.error('Error al obtener los horarios:', error);
+        console.error('error al obtener los horarios:', error);
       }
     );
   }
 
 
-//crear cita
+  
   crearCitas() {
     const citaData = this.citaForm.value;
     const fechaHora = new Date(citaData.fecha);
@@ -181,13 +178,13 @@ export class DashboardPacienteComponent {
     fechaHora.setHours(hours, minutes);
 
     const cita = {
-      fecha: fechaHora.toISOString(), 
-      estado: citaData.estado, 
-      medicoNombre: citaData.medicoNombre 
+      fecha: fechaHora.toISOString(),
+      estado: citaData.estado,
+      medicoNombre: citaData.medicoNombre
     };
 
     if (!cita.fecha || !cita.estado || !cita.medicoNombre) {
-      console.error('Datos incompletos para crear la cita:', cita);
+      console.error('faltan mas datos para crear la cita :(:', cita);
       return;
     }
 
@@ -205,19 +202,19 @@ export class DashboardPacienteComponent {
         this.notificacion.push('Cita creada');
         this.getCitas(); // Actualizar la lista de citas después de crear una nueva
       }, error => {
-        console.error('Error al crear la cita:', error);
+        console.error('error al crear la cita:', error);
         if (error.status === 0) {
-          console.error('El backend no está activado.');
+          console.error('el backend no está activado, arráncalo :)');
         } else if (error.status === 400) {
-          console.error('Solicitud incorrecta. Verifica los datos enviados:', cita);
+          console.error('error, verifica los datos enviados:', cita);
           if (error.error) {
-            console.error('Detalles del error:', error.error);
+            console.error('detalles del error:', error.error);
           }
         }
       });
     }
   }
-//metodo para revisar notificaciones
+  
   revisarNuevasNotificaciones() {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
@@ -225,16 +222,16 @@ export class DashboardPacienteComponent {
     this.http.get<any[]>(`${baseUrl}/notificaciones/destinatario`, { headers }).subscribe(
       (data) => {
         if (data && data.length > 0) {
-          this.notificacion.push('Has recibido una nueva notificación');
+          this.notificacion.push('has recibido una nueva notificación :)');
           this.mostrarNotificaciones(); // Mostrar la notificación una vez
         }
       },
       (error) => {
-        console.error('Error al obtener notificaciones:', error);
+        console.error('error al obtener notificaciones :(:', error);
       }
     );
   }
-//obtener notificaciones
+  
   getNotificaciones() {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
@@ -244,11 +241,11 @@ export class DashboardPacienteComponent {
         this.notificacionNueva = data;
       },
       (error) => {
-        console.error('Error al obtener notificaciones:', error);
+        console.error('error al obtener notificaciones:', error);
       }
     );
   }
-  //eliminar notificaciones
+  
   deleteNotificacion(id: number) {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
@@ -256,16 +253,16 @@ export class DashboardPacienteComponent {
     this.http.delete(`${baseUrl}/notificaciones/eliminar/${id}`, { headers }).subscribe(
       () => {
         this.notificacionNueva = this.notificacionNueva.filter(notification => notification.idNotificacion !== id);
-        this.snackBar.open('Notificación eliminada', 'Cerrar', {
+        this.snackBar.open('notificación eliminada', 'Cerrar', {
           duration: 3000,
         });
       },
       (error) => {
-        console.error('Error al eliminar la notificación:', error);
+        console.error('error al eliminar la notificación:', error);
       }
     );
   }
-  //enviar notificaciones
+  
   enviarNotificacion() {
     const notificacionData = this.notificacionForm.value;
     const token = localStorage.getItem('token');
@@ -278,18 +275,18 @@ export class DashboardPacienteComponent {
     };
     this.http.post(`${baseUrl}/notificaciones/enviar`, null, { headers, params }).subscribe(
       (response) => {
-        console.log('Notificación enviada:', response);
-        this.snackBar.open('Notificación enviada', 'Cerrar', {
+        console.log('notificación enviada:', response);
+        this.snackBar.open('notificación enviada', 'Cerrar', {
           duration: 3000,
         });
       },
       (error) => {
-        console.error('Error al enviar la notificación:', error);
+        console.error('error al enviar la notificación:', error);
       }
     );
   }
 
-//obtener citas del paciente
+  
   getCitas() {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
@@ -304,21 +301,21 @@ export class DashboardPacienteComponent {
           };
         });
       }, error => {
-        console.error('Error al obtener las citas:', error);
+        console.error('error al obtener las citas:', error);
         if (error.status === 0) {
-          console.error('El backend no está activado.');
+          console.error('el backend no está activado, arráncalo :)');
         }
       });
     }
   }
 
-//modificar citas del paciente
+  
   modificarCita() {
     if (this.modificarCitaForm.valid) {
       const formValue = this.modificarCitaForm.value;
       const fecha = new Date(formValue.fecha);
       const [hours, minutes] = formValue.hora.split(':');
-      fecha.setHours(hours, minutes, 0, 0); // Asegúrate de establecer los segundos y milisegundos a 0
+      fecha.setHours(hours, minutes, 0, 0); 
 
       const citaModificada = {
         id: formValue.id,
@@ -331,44 +328,44 @@ export class DashboardPacienteComponent {
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
       this.http.put(`${baseUrl}/citas/${formValue.id}`, citaModificada, { headers }).subscribe(response => {
-        this.snackBar.open('Cita modificada correctamente', 'Cerrar', {
+        this.snackBar.open('cita modificada correctamente', 'Cerrar', {
           duration: 3000,
         });
         this.getCitas();
       }, error => {
-        console.error('Error al modificar la cita:', error);
-        this.snackBar.open('Error al modificar la cita', 'Cerrar', {
+        console.error('error al modificar la cita:', error);
+        this.snackBar.open('error al modificar la cita :(', 'Cerrar', {
           duration: 3000,
         });
       });
     }
   }
-//eliminar citas del paciente
+  
   eliminarCita(id: number) {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
       this.http.delete(`${baseUrl}/citas/${id}`, { headers }).subscribe(response => {
-        console.log('Cita eliminada:', response);
-        this.notificacion.push('Cita eliminada');
+        console.log('cita eliminada:', response);
+        this.notificacion.push('cita eliminada');
         this.getCitas(); // Actualizar la lista de citas después de eliminar una cita
       }, error => {
-        console.error('Error al eliminar la cita:', error);
+        console.error('error al eliminar la cita:', error);
         if (error.status === 0) {
-          console.error('El backend no está activado.');
+          console.error('el backend no está activado, arráncalo :)');
         }
       });
     }
   }
-  //traer datos del usuario
+  
   getUsuarioData() {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     this.http.get<Usuario>(`${baseUrl}/usuarios/datos`, { headers }).subscribe(usuario => {
       this.usuarioForm.patchValue({
-        id: usuario.idUsuario, 
+        id: usuario.idUsuario,
         nombre: usuario.nombre,
         email: usuario.email,
         telefono: usuario.telefono,
@@ -376,21 +373,21 @@ export class DashboardPacienteComponent {
         rol: usuario.rol
       });
     }, error => {
-      console.error('Error al obtener los datos del usuario:', error);
+      console.error('error al traer los datos del usuario :(:', error);
     });
   }
-  //actualizar datos del usuario
+  
   actualizarUsuario() {
     const usuarioData = { ...this.usuarioForm.value };
-    delete usuarioData.id; // Excluir el campo 'id'
+    delete usuarioData.id;
 
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
       this.http.patch(`${baseUrl}/usuarios/actualizar`, usuarioData, { headers }).subscribe(response => {
-        console.log('Datos del usuario actualizados:', response);
-        this.notificacion.push('Datos del usuario actualizados');
+        console.log('datos del usuario actualizados:', response);
+        this.notificacion.push('datos del usuario actualizados:)');
         this.editMode = false;
 
         // Redirigir al dashboard correspondiente según el rol actualizado
@@ -400,15 +397,15 @@ export class DashboardPacienteComponent {
           this.router.navigate(['/dashboard-paciente']);
         }
       }, error => {
-        console.error('Error al actualizar los datos del usuario:', error);
+        console.error('error al actualizar los datos del usuario:', error);
         if (error.status === 0) {
-          console.error('El backend no está activado.');
+          console.error('el backend no está activado, arráncalo :)');
         }
       });
     }
   }
 
- //eliminar usuario
+  
   deleteUsuario() {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
@@ -419,21 +416,21 @@ export class DashboardPacienteComponent {
         const idUsuario = idControl.value;
 
         this.http.delete(`${baseUrl}/usuarios/eliminar/${idUsuario}`, { headers, responseType: 'json' }).subscribe(response => {
-          console.log('Usuario eliminado:', response);
-          this.notificacion.push('Usuario eliminado');
+          console.log('usuario eliminado, una pena :(:', response);
+          this.notificacion.push('usuario eliminado :(');
           this.router.navigate(['/login']); // Redirigir al login después de eliminar el usuario
         }, error => {
-          console.error('Error al eliminar el usuario:', error);
+          console.error('error al eliminar el usuario:', error);
           if (error.status === 0) {
-            console.error('El backend no está activado.');
+            console.error('el backend no está activado, arráncalo :)');
           }
         });
       } else {
-        console.error('El control de ID del usuario es nulo o no tiene valor.');
+        console.error('no se pude eliminar el usuario, no se encontró el id');
       }
     }
   }
-  //mostrar notificacionese
+  
   mostrarNotificaciones() {
     if (this.notificacion.length > 0) {
       this.snackBar.open(this.notificacion[0], 'Cerrar', {
@@ -441,17 +438,17 @@ export class DashboardPacienteComponent {
       });
       this.notificacion = []; // Limpiar las notificaciones después de mostrarlas
     } else {
-      this.snackBar.open('No hay notificaciones nuevas', 'Cerrar', {
+      this.snackBar.open('no hay notificaciones nuevas', 'Cerrar', {
         duration: 3000,
       });
     }
   }
-  //cerrar sesión y redirigir al home
+
   logout() {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('token');
       localStorage.removeItem('userRole');
-    }
+    } // redirigir al home
     this.router.navigate(['/home']);
   }
 }

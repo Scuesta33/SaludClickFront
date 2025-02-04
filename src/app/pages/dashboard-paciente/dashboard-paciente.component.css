@@ -29,7 +29,7 @@ h2 {
 
 mat-list-item {
   cursor: pointer;
-  margin-bottom: 15px; /* Añadir espacio entre los elementos del menú */
+  margin-bottom: 15px; 
 }
 
 mat-list-item:hover {
